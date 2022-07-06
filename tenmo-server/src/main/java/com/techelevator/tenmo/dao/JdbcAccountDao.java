@@ -18,7 +18,7 @@ public class JdbcAccountDao implements AccountDao {
     }
 
     @Override
-    public Account getAccountByUserId(Long userId) {
+    public Account getAccountByUserId(int userId) {
         Account account = null;
         String sql = "SELECT * FROM tenmo_account WHERE user_id = ?;";
 

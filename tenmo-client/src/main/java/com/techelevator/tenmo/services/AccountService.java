@@ -25,12 +25,11 @@ public class AccountService {
         Account account = null;
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(authenticatedUser.getToken());
-        HttpEntity<Long> entity = new HttpEntity<>(authenticatedUser.getUser().getId(), headers);
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         try {
-            ResponseEntity<Account> response = restTemplate.exchange(baseUrl + "account", HttpMethod.POST, entity, Account.class);
+            ResponseEntity<Account> response = restTemplate.exchange(baseUrl + "account", HttpMethod.GET, entity, Account.class);
             if (response.hasBody()) {
                 account = response.getBody();
             }

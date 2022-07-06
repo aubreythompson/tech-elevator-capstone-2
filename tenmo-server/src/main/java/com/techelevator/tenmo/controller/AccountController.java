@@ -22,8 +22,11 @@ public class AccountController {
         this.userDao = userDao;
     }
 
-    @RequestMapping(path = "/account", method = RequestMethod.POST)
-    public Account getAccount(@RequestBody Long userId) {
+    @RequestMapping(path = "/account", method = RequestMethod.GET)
+    public Account getAccount(Principal principal) {
+        String userName = principal.getName();
+        int userId = userDao.findIdByUsername(userName);
+
         Account account = accountDao.getAccountByUserId(userId);
         System.out.println("test");
 
