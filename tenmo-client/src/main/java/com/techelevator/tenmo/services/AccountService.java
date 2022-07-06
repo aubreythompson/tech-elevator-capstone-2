@@ -30,7 +30,7 @@ public class AccountService {
         HttpEntity<Long> entity = new HttpEntity<>(authenticatedUser.getUser().getId(), headers);
 
         try {
-            ResponseEntity<Account> response = restTemplate.exchange(baseUrl + "account", HttpMethod.GET, entity, Account.class);
+            ResponseEntity<Account> response = restTemplate.exchange(baseUrl + "account", HttpMethod.POST, entity, Account.class);
             if (response.hasBody()) {
                 account = response.getBody();
             }

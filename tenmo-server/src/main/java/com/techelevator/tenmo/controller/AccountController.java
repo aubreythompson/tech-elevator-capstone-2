@@ -22,9 +22,12 @@ public class AccountController {
         this.userDao = userDao;
     }
 
-    @RequestMapping(path = "/account", method = RequestMethod.GET)
+    @RequestMapping(path = "/account", method = RequestMethod.POST)
     public Account getAccount(@RequestBody Long userId) {
-        return accountDao.getAccountByUserId(userId);
+        Account account = accountDao.getAccountByUserId(userId);
+        System.out.println("test");
+
+        return account;
     }
 
 

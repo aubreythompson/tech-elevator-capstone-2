@@ -4,9 +4,11 @@ import com.techelevator.tenmo.model.Account;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
+@Component
 public class JdbcAccountDao implements AccountDao {
 
     private final JdbcTemplate jdbcTemplate;
@@ -18,7 +20,7 @@ public class JdbcAccountDao implements AccountDao {
     @Override
     public Account getAccountByUserId(Long userId) {
         Account account = null;
-        String sql = "SELECT * tenmo_account WHERE account_id = ?;";
+        String sql = "SELECT * FROM tenmo_account WHERE user_id = ?;";
 
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, userId);
 
