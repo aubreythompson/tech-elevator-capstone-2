@@ -76,6 +76,20 @@ public class JdbcUserDao implements UserDao {
     }
 
     @Override
+    public String getUsernameByAccountId(int accountId) {
+        String sql = "SELECT username FROM tenmo_user INNER JOIN tenmo_account using (user_id) WHERE account_id = ?";
+        String username = null;
+        try {
+           username = jdbcTemplate.queryForObject(sql, String.class, accountId);
+
+        } catch (NullPointerException | EmptyResultDataAccessException e) {
+            //throw account not found exception?
+        }
+
+        return username;
+    }
+
+    @Override
     public boolean create(String username, String password) {
 
         // create user

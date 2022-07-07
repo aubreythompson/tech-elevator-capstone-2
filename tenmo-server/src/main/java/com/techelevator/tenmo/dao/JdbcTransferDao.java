@@ -13,9 +13,13 @@ import java.util.List;
 public class JdbcTransferDao implements TransferDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final AccountDao accountDao;
+    private final UserDao userDao;
 
-    public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
+    public JdbcTransferDao(JdbcTemplate jdbcTemplate, AccountDao accountDao, UserDao userDao) {
         this.jdbcTemplate = jdbcTemplate;
+        this.accountDao = accountDao;
+        this.userDao = userDao;
     }
 
     @Override
@@ -58,6 +62,8 @@ public class JdbcTransferDao implements TransferDao {
          */
         //what kind of transfer is it?
         if (transfer.getTransferTypeId() == 2) { //SEND
+            //does the sending account have enough money?
+            int accountIdFrom = transfer.getAccountIdFrom();
 
         }
 
@@ -74,6 +80,8 @@ public class JdbcTransferDao implements TransferDao {
         transfer.setAccountIdFrom(rowSet.getInt("account_from"));
         transfer.setAccountIdTo(rowSet.getInt("account_to"));
         transfer.setAmount(rowSet.getBigDecimal("amount"));
+        transfer.setUserNameFrom(userDao.getUsernameByAccountId(rowSet.getInt("account_from")));
+        transfer.setUserNameTo(userDao.getUsernameByAccountId(rowSet.getInt("account_to")));
         return transfer;
     }
 }
