@@ -6,6 +6,7 @@ import com.techelevator.tenmo.model.UserCredentials;
 import com.techelevator.tenmo.services.*;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class App {
 
@@ -99,18 +100,29 @@ public class App {
 
         System.out.println("-------------------------------------------");
         System.out.println("Transfers");
-        System.out.println("ID              From/To              Amount");
+        System.out.println("ID            From/To       Amount");
         System.out.println("-------------------------------------------");
         for (Transfer t : transfers) {
-            String fromOrTo = t.getAccountIdFrom() == currentUser.getUser().getId() ? "To" : "From";
-            String otherUserAccount = t.getAccountIdFrom() == currentUser.getUser().getId() ?
-                    userService.getUserName(t.getAccountIdTo()) : userService.getUserName(t.getAccountIdFrom());
+            String fromOrTo = Objects.equals(t.getUserFrom().getId(), currentUser.getUser().getId()) ? "To" : "From";
+            String otherUser = Objects.equals(t.getUserFrom().getId(), currentUser.getUser().getId()) ?
+                    t.getUserTo().getUsername() : t.getUserFrom().getUsername();
 
-
-            System.out.println(t.getTransferId() + "              " + fromOrTo + " " + otherUser + "              " + t.getAmount());
+            System.out.println(t.getTransferId() + getWhiteSpace(String.valueOf(t.getTransferId()).length(), 14) + fromOrTo + " " +
+                    otherUser + getWhiteSpace(otherUser.length(), 14) + t.getAmount());
         }
         System.out.println("-------------------------------------------");
 	}
+
+
+    private String getWhiteSpace(int lengthOccupied, int totalLength) {
+        StringBuilder str = new StringBuilder();
+        for (int x = 0; x < totalLength - lengthOccupied; x++) {
+            str.append(" ");
+        }
+        return str.toString();
+    }
+
+
 
 	private void viewPendingRequests() {
 		// TODO Auto-generated method stub

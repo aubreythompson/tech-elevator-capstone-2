@@ -11,8 +11,8 @@ public class Transfer {
     private int accountIdTo;
     private BigDecimal amount;
 
-    private String UserNameFrom;
-    private String UserNameTo;
+    private User UserFrom;
+    private User UserTo;
 
     private enum transferType{REQUEST,SEND};
     private enum transferStatus{PENDING,APPROVED,REJECTED};
@@ -77,19 +77,19 @@ public class Transfer {
         this.amount = amount;
     }
 
-    public String getUserNameFrom() {
-        return UserNameFrom;
+    public User getUserFrom() {
+        return UserFrom;
     }
 
-    public void setUserNameFrom(String userNameFrom) {
-        UserNameFrom = userNameFrom;
+    public void setUserFrom(User userFrom) {
+        UserFrom = userFrom;
     }
 
-    public String getUserNameTo() {
-        return UserNameTo;
+    public User getUserTo() {
+        return UserTo;
     }
 
-    public void setUserNameTo(String userNameTo) {
-        UserNameTo = userNameTo;
+    public void setUserTo(User userTo) {
+        UserTo = userTo;
     }
 }

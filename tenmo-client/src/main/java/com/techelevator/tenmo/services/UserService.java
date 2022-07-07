@@ -2,6 +2,7 @@ package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.User;
 import com.techelevator.util.BasicLogger;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +19,19 @@ public class UserService {
 
     public UserService(String baseUrl) {
         this.baseUrl = baseUrl;
+    }
+
+
+
+
+    public User[] getOtherUsers(AuthenticatedUser authenticatedUser) {
+        User[] users = null;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authenticatedUser.getToken());
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        return users;
     }
 
     public String getUserName(int userId) {
