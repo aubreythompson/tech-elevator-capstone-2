@@ -45,6 +45,27 @@ public class JdbcTransferDao implements TransferDao {
 
     }
 
+    @Override
+    public void makeTransfer(Transfer transfer) {
+        /**I should be able to choose from a list of users to send TE Bucks to.
+         I must not be allowed to send money to myself.
+         A transfer includes the User IDs of the from and to users and the amount of TE Bucks.
+         The receiver's account balance is increased by the amount of the transfer.
+         The sender's account balance is decreased by the amount of the transfer.
+         I can't send more TE Bucks than I have in my account.
+         I can't send a zero or negative amount.
+         A Sending Transfer has an initial status of Approved.
+         */
+        //what kind of transfer is it?
+        if (transfer.getTransferTypeId() == 2) { //SEND
+
+        }
+
+        //get amount in
+      //  String sql =
+
+    }
+
     private Transfer mapRowToTransfer(SqlRowSet rowSet) {
         Transfer transfer = new Transfer();
         transfer.setTransferId(rowSet.getInt("transfer_id"));
