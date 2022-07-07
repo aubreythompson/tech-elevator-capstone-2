@@ -8,4 +8,6 @@ public interface AccountDao {
 
     public Account getAccountByUserId(int userId);
 
+    public Account getAccountByAccountId(int userId);
+
 }

@@ -33,6 +33,21 @@ public class JdbcAccountDao implements AccountDao {
         return account;
     }
 
+    @Override
+    public Account getAccountByAccountId(int accountId) {
+        Account account = null;
+        String sql = "SELECT * FROM tenmo_account WHERE account_id = ?;";
+
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, accountId);
+
+        if (rowSet.next()) {
+            account = mapRowToAccount(rowSet);
+        } else {
+            System.out.println("getAccountByAccountId failed to find account");
+        }
+
+        return account;
+    }
 
 
     private Account mapRowToAccount(SqlRowSet rowSet) {

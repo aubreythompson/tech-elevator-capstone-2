@@ -64,7 +64,11 @@ public class JdbcTransferDao implements TransferDao {
         if (transfer.getTransferTypeId() == 2) { //SEND
             //does the sending account have enough money?
             int accountIdFrom = transfer.getAccountIdFrom();
+            if (accountDao.getAccountByAccountId(accountIdFrom).getBalance().compareTo(transfer.getAmount()) == -1) {
+                System.out.println("User " );
+            } else {
 
+            }
         }
 
         //get amount in
