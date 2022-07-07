@@ -10,4 +10,6 @@ public interface TransferDao {
 
     public List<Transfer> getAllTransfersForUser(int userId);
 
+    public void makeTransfer(Transfer transfer);
+
 }
