@@ -103,8 +103,9 @@ public class App {
         System.out.println("-------------------------------------------");
         for (Transfer t : transfers) {
             String fromOrTo = t.getAccountIdFrom() == currentUser.getUser().getId() ? "To" : "From";
-            String otherUser = t.getAccountIdFrom() == currentUser.getUser().getId() ?
+            String otherUserAccount = t.getAccountIdFrom() == currentUser.getUser().getId() ?
                     userService.getUserName(t.getAccountIdTo()) : userService.getUserName(t.getAccountIdFrom());
+
 
             System.out.println(t.getTransferId() + "              " + fromOrTo + " " + otherUser + "              " + t.getAmount());
         }

@@ -31,5 +31,16 @@ public class UserService {
         return userName;
     }
 
+    public String getUserNameByAccount(int accountId) {
+        String userName = null;
+
+        try {
+            userName = restTemplate.postForObject(baseUrl + "get-user", accountId, String.class);
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+        }
+        return userName;
+    }
+
 
 }
