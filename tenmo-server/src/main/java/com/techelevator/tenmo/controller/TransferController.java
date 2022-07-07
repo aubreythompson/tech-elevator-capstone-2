@@ -5,11 +5,14 @@ import com.techelevator.tenmo.dao.JdbcAccountDao;
 import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.Account;
+import com.techelevator.tenmo.model.InvalidTransferException;
 import com.techelevator.tenmo.model.Transfer;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.security.Principal;
 
 @RestController
@@ -35,6 +38,15 @@ public class TransferController {
     }
 
 
+    @RequestMapping(path = "/send-bucks", method = RequestMethod.POST)
+    public void sendBucks(Principal principal, @Valid @RequestBody Transfer transfer) throws InvalidTransferException {
+        String userName = principal.getName();
+        int currentUserId = userDao.findIdByUsername(userName);
+        if (currentUserId==transfer.getAccountIdFrom()) {
+            transferDao.sendBucks(transfer);
+        }
+
+    }
 
 
 

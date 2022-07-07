@@ -14,8 +14,8 @@ public class Transfer {
     private User UserFrom;
     private User UserTo;
 
-    private enum transferType{REQUEST,SEND};
-    private enum transferStatus{PENDING,APPROVED,REJECTED};
+    public enum transferType{REQUEST,SEND};
+    public enum transferStatus{PENDING,APPROVED,REJECTED};
 
     public Transfer() {
     }
