@@ -1,10 +1,9 @@
 package com.techelevator.tenmo;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
+import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.UserCredentials;
-import com.techelevator.tenmo.services.AccountService;
-import com.techelevator.tenmo.services.AuthenticationService;
-import com.techelevator.tenmo.services.ConsoleService;
+import com.techelevator.tenmo.services.*;
 
 import java.math.BigDecimal;
 
@@ -15,6 +14,8 @@ public class App {
     private final ConsoleService consoleService = new ConsoleService();
     private final AuthenticationService authenticationService = new AuthenticationService(API_BASE_URL);
     private final AccountService accountService = new AccountService(API_BASE_URL);
+    private final TransferService transferService = new TransferService(API_BASE_URL);
+    private final UserService userService = new UserService(API_BASE_URL);
 
     private AuthenticatedUser currentUser;
 
@@ -94,8 +95,20 @@ public class App {
 	}
 
 	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
-		
+		Transfer[] transfers = transferService.getTransfersForUser(currentUser);
+
+        System.out.println("-------------------------------------------");
+        System.out.println("Transfers");
+        System.out.println("ID              From/To              Amount");
+        System.out.println("-------------------------------------------");
+        for (Transfer t : transfers) {
+            String fromOrTo = t.getAccountIdFrom() == currentUser.getUser().getId() ? "To" : "From";
+            String otherUser = t.getAccountIdFrom() == currentUser.getUser().getId() ?
+                    userService.getUserName(t.getAccountIdTo()) : userService.getUserName(t.getAccountIdFrom());
+
+            System.out.println(t.getTransferId() + "              " + fromOrTo + " " + otherUser + "              " + t.getAmount());
+        }
+        System.out.println("-------------------------------------------");
 	}
 
 	private void viewPendingRequests() {
