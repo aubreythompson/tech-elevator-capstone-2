@@ -2,6 +2,7 @@ package com.techelevator.tenmo;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.model.UserCredentials;
 import com.techelevator.tenmo.services.*;
 
@@ -130,7 +131,23 @@ public class App {
 	}
 
 	private void sendBucks() {
-		// TODO Auto-generated method stub
+
+        User[] users = userService.getOtherUsers(currentUser);
+
+        System.out.println("-------------------------------------------");
+        System.out.println("ID          Name");
+        System.out.println("-------------------------------------------");
+
+        for (User user : users) {
+            System.out.println(user.getId() + getWhiteSpace(String.valueOf(user.getId()).length(), 10) + user.getUsername());
+        }
+
+        System.out.println("-------------------------------------------");
+        System.out.println();
+
+        int userId = consoleService.promptForInt("Enter ID of user you are sending to (0 to cancel):");
+        BigDecimal amount = consoleService.promptForBigDecimal("Enter amount:");
+
 		
 	}
 

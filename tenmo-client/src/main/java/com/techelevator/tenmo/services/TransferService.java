@@ -38,4 +38,21 @@ public class TransferService {
         }
         return transfers;
     }
+
+    public boolean makeTransfer(AuthenticatedUser authenticatedUser, Transfer transfer) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authenticatedUser.getToken());
+        HttpEntity<Transfer> entity = new HttpEntity<>(transfer, headers);
+
+        try {
+            ResponseEntity<Void> ignored = restTemplate.exchange(baseUrl + "make-transfer", HttpMethod.POST, entity, Void.class);
+            return true;
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+            return false;
+        }
+    }
+
+
+
 }
