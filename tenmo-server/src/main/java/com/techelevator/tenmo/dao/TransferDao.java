@@ -13,6 +13,8 @@ public interface TransferDao {
 
     public List<Transfer> getTransfersForAccountByStatusId(int accountId, int statusId);
 
+    public void update(int transferId, int statusId);
+
     public Transfer create(Transfer transfer);
 
 }

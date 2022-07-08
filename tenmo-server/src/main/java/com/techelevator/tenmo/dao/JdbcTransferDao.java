@@ -26,7 +26,18 @@ public class JdbcTransferDao implements TransferDao {
 
     @Override
     public Transfer getTransferById(int transferId) {
-        return null;
+        Transfer transfer = null;
+        String sql = "SELECT * FROM tenmo_transfer WHERE transfer_id = ?;";
+
+        try {
+            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, transferId);
+            if (rowSet.next()) {
+                transfer= mapRowToTransfer(rowSet);
+            }
+
+        } catch (DataAccessException e) {
+        }
+        return transfer;
     }
 
     @Override
@@ -84,6 +95,11 @@ public class JdbcTransferDao implements TransferDao {
         }
 
         return getTransferById(transferId);
+    }
+
+    public void update(int transferId, int statusId) {
+        String sql = "UPDATE tenmo_transfer SET transfer_status_id = ? WHERE transfer_id = ?";
+        jdbcTemplate.update(sql, statusId, transferId);
     }
 
     private Transfer mapRowToTransfer(SqlRowSet rowSet) {
