@@ -65,6 +65,7 @@ public class TransferService {
             return true;
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
+            System.out.println(e.getMessage());
             return false;
         }
     }

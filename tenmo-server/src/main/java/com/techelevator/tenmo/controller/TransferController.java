@@ -57,7 +57,7 @@ public class TransferController {
             throw new NonPositiveTransferException();
         }
 
-        if (currentUser.getId()!=transferDto.getUserIdFrom() || currentUser.getId()==transferDto.getUserIdTo()) {
+        if (currentUser.getId()!=transferDto.getUserIdFrom()) {
             throw new InvalidUserException();
         }
         Account accountFrom = accountDao.getAccountByUserId(currentUser.getId());
@@ -70,9 +70,9 @@ public class TransferController {
         BigDecimal accountToBalance = accountTo.getBalance();
         BigDecimal newAmountTo = accountToBalance.add(transferDto.getAmount());
         accountDao.update(new Account(accountFrom.getAccountId(), currentUser.getId(), newAmountFrom));
-        accountDao.update(new Account(accountTo.getAccountId(), currentUser.getId(), newAmountTo));
+        accountDao.update(new Account(accountTo.getAccountId(), transferDto.getUserIdTo(), newAmountTo));
 
-        Transfer transfer = new Transfer(0,1,1,transferDto.getUserIdFrom(),transferDto.getUserIdTo(),transferDto.getAmount());
+        Transfer transfer = new Transfer(0,1,1,accountFrom.getAccountId(),accountTo.getAccountId(),transferDto.getAmount());
         transferDao.create(transfer);
 
     }
