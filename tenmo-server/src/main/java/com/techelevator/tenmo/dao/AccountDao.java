@@ -10,4 +10,7 @@ public interface AccountDao {
 
     public Account getAccountByAccountId(int userId);
 
+    public void update(Account account);
+
+
 }

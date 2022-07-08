@@ -43,12 +43,19 @@ public class JdbcAccountDao implements AccountDao {
         if (rowSet.next()) {
             account = mapRowToAccount(rowSet);
         } else {
-            System.out.println("getAccountByAccountId failed to find account");
+            System.out.println("getAccountById failed to find account");
         }
 
         return account;
     }
 
+    @Override
+    public void update(Account account)  {
+        BigDecimal newAmount = account.getBalance();
+        int userId = account.getUserId();
+        String sql = "UPDATE tenmo_account SET amount = ? WHERE user_id = ?";
+        jdbcTemplate.update(sql, newAmount, userId);
+    }
 
     private Account mapRowToAccount(SqlRowSet rowSet) {
         return new Account(rowSet.getInt("account_id"), rowSet.getInt("user_id"), rowSet.getBigDecimal("balance"));
