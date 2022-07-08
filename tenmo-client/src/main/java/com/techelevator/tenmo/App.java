@@ -1,9 +1,6 @@
 package com.techelevator.tenmo;
 
-import com.techelevator.tenmo.model.AuthenticatedUser;
-import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.User;
-import com.techelevator.tenmo.model.UserCredentials;
+import com.techelevator.tenmo.model.*;
 import com.techelevator.tenmo.services.*;
 
 import java.math.BigDecimal;
@@ -145,10 +142,15 @@ public class App {
         System.out.println("-------------------------------------------");
         System.out.println();
 
-        int userId = consoleService.promptForInt("Enter ID of user you are sending to (0 to cancel):");
+        int recipientUserId = consoleService.promptForInt("Enter ID of user you are sending to (0 to cancel):");
         BigDecimal amount = consoleService.promptForBigDecimal("Enter amount:");
 
-		
+        TransferDTO transfer = new TransferDTO(Math.toIntExact(currentUser.getUser().getId()), recipientUserId, amount);
+        if (transferService.sendBucks(currentUser, transfer)) {
+            System.out.println("success!");
+        } else {
+            System.out.println("failed!");
+        }
 	}
 
 	private void requestBucks() {

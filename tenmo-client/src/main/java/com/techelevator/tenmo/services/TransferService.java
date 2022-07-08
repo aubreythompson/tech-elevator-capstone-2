@@ -3,6 +3,7 @@ package com.techelevator.tenmo.services;
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.TransferDTO;
 import com.techelevator.util.BasicLogger;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -52,6 +53,29 @@ public class TransferService {
             return false;
         }
     }
+
+
+    public boolean sendBucks(AuthenticatedUser authenticatedUser, TransferDTO transfer) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authenticatedUser.getToken());
+        HttpEntity<TransferDTO> entity = new HttpEntity<>(transfer, headers);
+
+        try {
+            restTemplate.exchange(baseUrl + "send-bucks", HttpMethod.POST, entity, Void.class);
+            return true;
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean requestBucks() {
+        return false;
+    }
+
+
+
+
 
 
 
