@@ -57,24 +57,52 @@ public class ConsoleService {
         return scanner.nextLine();
     }
 
-    public int promptForInt(String prompt) {
+    public int promptForInt(String prompt, int min, int max) {
         System.out.print(prompt);
         while (true) {
             try {
-                return Integer.parseInt(scanner.nextLine());
+                int selection = Integer.parseInt(scanner.nextLine());
+                if (selection < min || selection > max) {
+                    throw new NumberFormatException();
+                } else {
+                    return selection;
+                }
             } catch (NumberFormatException e) {
-                System.out.println("Please enter a number.");
+                System.out.println("Please enter a number between " + min + " and " + max + ".");
             }
         }
     }
 
-    public BigDecimal promptForBigDecimal(String prompt) {
+    public int promptForInt(String prompt, int[] options) {
         System.out.print(prompt);
         while (true) {
             try {
-                return new BigDecimal(scanner.nextLine());
+                int selection = Integer.parseInt(scanner.nextLine());
+                for (int option : options) {
+                    if (selection == option) {
+                        return selection;
+                    }
+                }
+                throw new NumberFormatException();
+
             } catch (NumberFormatException e) {
-                System.out.println("Please enter a decimal number.");
+                System.out.println("Please enter a number from the options listed.");
+            }
+        }
+    }
+
+    public BigDecimal promptForBigDecimal(String prompt, boolean mustBePositive) {
+        System.out.print(prompt);
+        while (true) {
+            try {
+                BigDecimal input = new BigDecimal(scanner.nextLine());
+                if (input.doubleValue() > 0) {
+                    return input;
+                } else {
+                    throw new NumberFormatException();
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a " + (mustBePositive ? "positive " : "") + "decimal number");
             }
         }
     }

@@ -98,33 +98,60 @@ public class App {
 
         System.out.println("-------------------------------------------");
         System.out.println("Transfers");
-        System.out.println("ID            From/To       Amount");
+        System.out.println("ID\t\t\tFrom/To\t\tAmount");
         System.out.println("-------------------------------------------");
         for (Transfer t : transfers) {
             String fromOrTo = Objects.equals(t.getUserFrom().getId(), currentUser.getUser().getId()) ? "To" : "From";
             String otherUser = Objects.equals(t.getUserFrom().getId(), currentUser.getUser().getId()) ?
                     t.getUserTo().getUsername() : t.getUserFrom().getUsername();
 
-            System.out.println(t.getTransferId() + getWhiteSpace(String.valueOf(t.getTransferId()).length(), 14) + fromOrTo + " " +
-                    otherUser + getWhiteSpace(otherUser.length(), 14) + t.getAmount());
+            System.out.println(t.getTransferId() + "\t\t" + fromOrTo + " " +
+                    otherUser + "\t\t" + t.getAmount());
         }
         System.out.println("-------------------------------------------");
 	}
 
 
-    private String getWhiteSpace(int lengthOccupied, int totalLength) {
-        StringBuilder str = new StringBuilder();
-        for (int x = 0; x < totalLength - lengthOccupied; x++) {
-            str.append(" ");
-        }
-        return str.toString();
-    }
-
-
-
 	private void viewPendingRequests() {
-		// TODO Auto-generated method stub
-		
+
+        Transfer[] transfers = transferService.getPendingRequests(currentUser);
+
+        System.out.println("-------------------------------------------");
+        System.out.println("Pending Transfers");
+        System.out.println("ID\t\t\tTo\t\tAmount");
+        System.out.println("-------------------------------------------");
+
+
+        int[] options = new int[transfers.length];
+        for (int i = 0; i < transfers.length; i++) {
+            options[i] = transfers[i].getTransferId();
+            System.out.println(transfers[i].getTransferId() + "\t\t" +
+                    transfers[i].getUserFrom().getUsername() + "\t\t" + transfers[i].getAmount());
+        }
+
+        int transferId = consoleService.promptForInt("Please enter transfer ID to approve/reject (0 to cancel):", options);
+
+        System.out.println("1: Approve");
+        System.out.println("2: Reject");
+        System.out.println("0: Don't approve or reject");
+        System.out.println("---------");
+
+        int selection = consoleService.promptForInt("Please choose an option:", 0, 2);
+
+
+        if (selection == 1) {
+            if (transferService.approvePendingRequest(currentUser, transferId)) {
+                System.out.println("success!");
+            } else {
+                System.out.println("failed!");
+            }
+        } else if (selection == 2) {
+            if (transferService.rejectPendingRequest(currentUser, transferId)) {
+                System.out.println("success!");
+            } else {
+                System.out.println("failed!");
+            }
+        }
 	}
 
 	private void sendBucks() {
@@ -132,18 +159,21 @@ public class App {
         User[] users = userService.getOtherUsers(currentUser);
 
         System.out.println("-------------------------------------------");
-        System.out.println("ID          Name");
+        System.out.println("ID\t\t\tName");
         System.out.println("-------------------------------------------");
 
-        for (User user : users) {
-            System.out.println(user.getId() + getWhiteSpace(String.valueOf(user.getId()).length(), 10) + user.getUsername());
+        int[] options = new int[users.length];
+        for (int i = 0; i < users.length; i++) {
+            options[i] = Math.toIntExact(users[i].getId());
+
+            System.out.println(users[i].getId() + "\t\t" + users[i].getUsername());
         }
 
         System.out.println("-------------------------------------------");
         System.out.println();
 
-        int recipientUserId = consoleService.promptForInt("Enter ID of user you are sending to (0 to cancel):");
-        BigDecimal amount = consoleService.promptForBigDecimal("Enter amount:");
+        int recipientUserId = consoleService.promptForInt("Enter ID of user you are sending to (0 to cancel):", options);
+        BigDecimal amount = consoleService.promptForBigDecimal("Enter amount:", true);
 
         TransferDTO transfer = new TransferDTO(Math.toIntExact(currentUser.getUser().getId()), recipientUserId, amount);
         if (transferService.sendBucks(currentUser, transfer)) {
@@ -154,7 +184,30 @@ public class App {
 	}
 
 	private void requestBucks() {
-		// TODO Auto-generated method stub
+        User[] users = userService.getOtherUsers(currentUser);
+
+        System.out.println("-------------------------------------------");
+        System.out.println("ID\t\t\tName");
+        System.out.println("-------------------------------------------");
+
+        int[] options = new int[users.length];
+        for (int i = 0; i < users.length; i++) {
+            options[i] = Math.toIntExact(users[i].getId());
+            System.out.println(users[i].getId() + "\t\t" + users[i].getUsername());
+        }
+
+        System.out.println("-------------------------------------------");
+        System.out.println();
+
+        int targetUserId = consoleService.promptForInt("Enter ID of user you are requesting from (0 to cancel):", options);
+        BigDecimal amount = consoleService.promptForBigDecimal("Enter amount:", true);
+
+        TransferDTO transfer = new TransferDTO(targetUserId, Math.toIntExact(currentUser.getUser().getId()), amount);
+        if (transferService.sendBucks(currentUser, transfer)) {
+            System.out.println("success!");
+        } else {
+            System.out.println("failed!");
+        }
 		
 	}
 

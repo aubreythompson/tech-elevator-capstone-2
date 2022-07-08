@@ -69,9 +69,68 @@ public class TransferService {
         }
     }
 
-    public boolean requestBucks() {
-        return false;
+    public boolean requestBucks(AuthenticatedUser authenticatedUser, TransferDTO transfer) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authenticatedUser.getToken());
+        HttpEntity<TransferDTO> entity = new HttpEntity<>(transfer, headers);
+
+        try {
+            restTemplate.exchange(baseUrl + "request-bucks", HttpMethod.POST, entity, Void.class);
+            return true;
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+            return false;
+        }
     }
+
+
+    public Transfer[] getPendingRequests(AuthenticatedUser authenticatedUser) {
+        Transfer[] transfers = null;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authenticatedUser.getToken());
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<Transfer[]> response = restTemplate.exchange(baseUrl + "pending-requests", HttpMethod.GET, entity, Transfer[].class);
+            if (response.hasBody()) {
+                transfers = response.getBody();
+            }
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+        }
+        return transfers;
+
+    }
+
+    public boolean approvePendingRequest(AuthenticatedUser authenticatedUser, int transferId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authenticatedUser.getToken());
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        try {
+            restTemplate.exchange(baseUrl + "approve-request/" + transferId, HttpMethod.POST, entity, Void.class);
+            return true;
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+            return false;
+        }
+
+    }
+
+    public boolean rejectPendingRequest(AuthenticatedUser authenticatedUser, int transferId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authenticatedUser.getToken());
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        try {
+            restTemplate.exchange(baseUrl + "reject-request/" + transferId, HttpMethod.POST, entity, Void.class);
+            return true;
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+            return false;
+        }
+    }
+
 
 
 
