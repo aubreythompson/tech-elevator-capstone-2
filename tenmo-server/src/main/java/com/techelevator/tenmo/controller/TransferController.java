@@ -52,13 +52,9 @@ public class TransferController {
 
         Account accountFrom = accountDao.getAccountByUserId(currentUser.getId());
         Account accountTo = accountDao.getAccountByUserId(transferDto.getUserIdTo());
-        BigDecimal accountFromBalance = accountFrom.getBalance();
-        if (accountFromBalance.compareTo(transferDto.getAmount())==-1) {
-            throw new InsufficientFundsException();
-        }
 
         transferMoney(accountFrom,accountTo,transferDto.getAmount());
-        Transfer transfer = new Transfer(0,2,2,accountFrom.getAccountId(),accountTo.getAccountId(),transferDto.getAmount()); //type = SEND, status = APPROVED
+        Transfer transfer = new Transfer(0, Transfer.transferTypes.SEND,Transfer.transferStatuses.APPROVED,accountFrom.getAccountId(),accountTo.getAccountId(),transferDto.getAmount());
         transferDao.create(transfer);
 
     }
@@ -77,13 +73,10 @@ public class TransferController {
         if (transferDto.getAmount().compareTo(BigDecimal.ZERO) != 1) {
             throw new NonPositiveTransferException();
         }
-
-
-
         Account accountTo = accountDao.getAccountByUserId(currentUser.getId());
         Account accountFrom = accountDao.getAccountByUserId(transferDto.getUserIdFrom());
 
-        Transfer transfer = new Transfer(0,1,1,accountFrom.getAccountId(),accountTo.getAccountId(),transferDto.getAmount()); //type = REQUEST, status = PENDING
+        Transfer transfer = new Transfer(0,Transfer.transferTypes.REQUEST,Transfer.transferStatuses.PENDING,accountFrom.getAccountId(),accountTo.getAccountId(),transferDto.getAmount());
         transferDao.create(transfer);
     }
 
@@ -95,7 +88,7 @@ public class TransferController {
 
         Account account = accountDao.getAccountByUserId(currentUser.getId());
 
-        Transfer[] transfers = transferDao.getTransfersForAccountByStatusId(account.getAccountId(), 1).toArray(new Transfer[0]); //PENDING
+        Transfer[] transfers = transferDao.getTransfersForAccountByStatusId(account.getAccountId(), Transfer.transferStatuses.PENDING).toArray(new Transfer[0]);
         return transfers;
     }
 
@@ -112,8 +105,9 @@ public class TransferController {
 
         Account accountTo = accountDao.getAccountByAccountId(transfer.getAccountIdTo());
 
-        transferDao.update(transferId,2); //APPROVED
         transferMoney(accountFrom,accountTo,transfer.getAmount());
+        transferDao.update(transferId,Transfer.transferStatuses.APPROVED);
+
     }
 
     @Transactional
@@ -128,12 +122,16 @@ public class TransferController {
         if (account.getAccountId()!=transfer.getAccountIdFrom()) {
             throw new InvalidUserException();
         }
-        transferDao.update(transferId,3); //REJECTED
+        transferDao.update(transferId,Transfer.transferStatuses.REJECTED);
     }
 
     @Transactional
-    private void transferMoney(Account accountFrom, Account accountTo, BigDecimal amount) {
+    private void transferMoney(Account accountFrom, Account accountTo, BigDecimal amount) throws InsufficientFundsException {
+
         BigDecimal newAmountFrom = accountFrom.getBalance().subtract(amount);
+        if (newAmountFrom.compareTo(BigDecimal.ZERO)==-1) {
+            throw new InsufficientFundsException();
+        }
         BigDecimal newAmountTo = accountTo.getBalance().add(amount);
         accountDao.update(accountFrom.getAccountId(), newAmountFrom);
         accountDao.update(accountTo.getAccountId(), newAmountTo);
