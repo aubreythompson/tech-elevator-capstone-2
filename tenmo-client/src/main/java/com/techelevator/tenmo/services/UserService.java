@@ -16,9 +16,11 @@ public class UserService {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final String baseUrl;
+    private final ConsoleService consoleService;
 
-    public UserService(String baseUrl) {
+    public UserService(String baseUrl, ConsoleService consoleService) {
         this.baseUrl = baseUrl;
+        this.consoleService = consoleService;
     }
 
 

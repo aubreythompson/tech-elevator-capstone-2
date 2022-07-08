@@ -12,9 +12,9 @@ public class App {
 
     private final ConsoleService consoleService = new ConsoleService();
     private final AuthenticationService authenticationService = new AuthenticationService(API_BASE_URL, consoleService);
-    private final AccountService accountService = new AccountService(API_BASE_URL);
+    private final AccountService accountService = new AccountService(API_BASE_URL, consoleService);
     private final TransferService transferService = new TransferService(API_BASE_URL, consoleService);
-    private final UserService userService = new UserService(API_BASE_URL);
+    private final UserService userService = new UserService(API_BASE_URL, consoleService);
 
     private AuthenticatedUser currentUser;
 
@@ -84,12 +84,18 @@ public class App {
     }
 
 	private void viewCurrentBalance() {
-		BigDecimal balance = accountService.getAccount(currentUser).getBalance();
-        System.out.println("Your current account balance is: $" + balance);
+        Account account = accountService.getAccount(currentUser);
+        if (account != null) {
+            BigDecimal balance = account.getBalance();
+            System.out.println("Your current account balance is: $" + balance);
+        }
 	}
 
 	private void viewTransferHistory() {
 		Transfer[] transfers = transferService.getTransfersForUser(currentUser);
+        if (transfers == null) {
+            return;
+        }
         if (transfers.length == 0) {
             System.out.println("You have no past transfers to view");
             return;
@@ -127,6 +133,7 @@ public class App {
                 System.out.println("From: " + t.getUserFrom().getUsername());
                 System.out.println("To: " + t.getUserTo().getUsername());
                 System.out.println("Type: " + t.getTypeString());
+                System.out.println("Status: " + t.getStatusString());
                 System.out.println("Amount: $" + t.getAmount());
                 break;
             }
@@ -137,6 +144,10 @@ public class App {
 	private void viewPendingRequests() {
 
         Transfer[] transfers = transferService.getPendingRequests(currentUser);
+        if (transfers == null) {
+            return;
+        }
+
         if (transfers.length == 0) {
             System.out.println("You have no pending requests to view");
             return;
@@ -181,6 +192,9 @@ public class App {
 	private void sendBucks() {
 
         User[] users = userService.getOtherUsers(currentUser);
+        if (users == null) {
+            return;
+        }
 
         System.out.println("-------------------------------------------");
         System.out.println("ID\t\t\tName");
@@ -201,7 +215,10 @@ public class App {
             return;
         }
 
-        BigDecimal amount = consoleService.promptForBigDecimal("Enter amount:", true);
+        BigDecimal amount = consoleService.promptForBigDecimal("Enter amount (0 to cancel):", true);
+        if (amount.doubleValue() == 0) {
+            return;
+        }
 
         TransferDTO transfer = new TransferDTO(Math.toIntExact(currentUser.getUser().getId()), recipientUserId, amount);
         if (transferService.sendBucks(currentUser, transfer)) {
@@ -211,6 +228,9 @@ public class App {
 
 	private void requestBucks() {
         User[] users = userService.getOtherUsers(currentUser);
+        if (users == null) {
+            return;
+        }
 
         System.out.println("-------------------------------------------");
         System.out.println("ID\t\t\tName");
@@ -230,7 +250,10 @@ public class App {
             return;
         }
 
-        BigDecimal amount = consoleService.promptForBigDecimal("Enter amount:", true);
+        BigDecimal amount = consoleService.promptForBigDecimal("Enter amount (0 to cancel):", true);
+        if (amount.doubleValue() == 0) {
+            return;
+        }
 
         TransferDTO transfer = new TransferDTO(targetUserId, Math.toIntExact(currentUser.getUser().getId()), amount);
         if (transferService.requestBucks(currentUser, transfer)) {

@@ -45,6 +45,7 @@ public class AuthenticationService {
             restTemplate.exchange(baseUrl + "register", HttpMethod.POST, entity, Void.class);
             success = true;
         } catch (RestClientResponseException | ResourceAccessException e) {
+            consoleService.printErrorMessage(e.getMessage());
             BasicLogger.log(e.getMessage());
         }
         return success;

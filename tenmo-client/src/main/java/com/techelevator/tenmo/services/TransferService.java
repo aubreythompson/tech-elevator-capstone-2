@@ -37,6 +37,7 @@ public class TransferService {
                 transfers = response.getBody();
             }
         } catch (RestClientResponseException | ResourceAccessException e) {
+            consoleService.printErrorMessage(e.getMessage());
             BasicLogger.log(e.getMessage());
         }
         return transfers;
@@ -51,6 +52,7 @@ public class TransferService {
             ResponseEntity<Void> ignored = restTemplate.exchange(baseUrl + "make-transfer", HttpMethod.POST, entity, Void.class);
             return true;
         } catch (RestClientResponseException | ResourceAccessException e) {
+            consoleService.printErrorMessage(e.getMessage());
             BasicLogger.log(e.getMessage());
             return false;
         }
@@ -66,8 +68,8 @@ public class TransferService {
             restTemplate.exchange(baseUrl + "send-bucks", HttpMethod.POST, entity, Void.class);
             return true;
         } catch (RestClientResponseException | ResourceAccessException e) {
+            consoleService.printErrorMessage(e.getMessage());
             BasicLogger.log(e.getMessage());
-            System.out.println(e.getMessage());
             return false;
         }
     }
@@ -81,6 +83,7 @@ public class TransferService {
             restTemplate.exchange(baseUrl + "request-bucks", HttpMethod.POST, entity, Void.class);
             return true;
         } catch (RestClientResponseException | ResourceAccessException e) {
+            consoleService.printErrorMessage(e.getMessage());
             BasicLogger.log(e.getMessage());
             return false;
         }
@@ -99,6 +102,7 @@ public class TransferService {
                 transfers = response.getBody();
             }
         } catch (RestClientResponseException | ResourceAccessException e) {
+            consoleService.printErrorMessage(e.getMessage());
             BasicLogger.log(e.getMessage());
         }
         return transfers;
@@ -114,6 +118,7 @@ public class TransferService {
             restTemplate.exchange(baseUrl + "approve-request/" + transferId, HttpMethod.PUT, entity, Void.class);
             return true;
         } catch (RestClientResponseException | ResourceAccessException e) {
+            consoleService.printErrorMessage(e.getMessage());
             BasicLogger.log(e.getMessage());
             return false;
         }
@@ -129,6 +134,7 @@ public class TransferService {
             restTemplate.exchange(baseUrl + "reject-request/" + transferId, HttpMethod.PUT, entity, Void.class);
             return true;
         } catch (RestClientResponseException | ResourceAccessException e) {
+            consoleService.printErrorMessage(e.getMessage());
             BasicLogger.log(e.getMessage());
             return false;
         }

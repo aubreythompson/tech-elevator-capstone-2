@@ -96,13 +96,13 @@ public class ConsoleService {
         while (true) {
             try {
                 BigDecimal input = new BigDecimal(scanner.nextLine());
-                if (input.doubleValue() > 0) {
+                if (input.doubleValue() >= 0) {
                     return input;
                 } else {
                     throw new NumberFormatException();
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Please enter a " + (mustBePositive ? "positive " : "") + "decimal number");
+                System.out.println("Please enter a " + (mustBePositive ? "non-negative " : "") + "decimal number");
             }
         }
     }

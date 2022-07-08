@@ -14,9 +14,11 @@ public class AccountService {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final String baseUrl;
+    private final ConsoleService consoleService;
 
-    public AccountService(String baseUrl) {
+    public AccountService(String baseUrl, ConsoleService consoleService) {
         this.baseUrl = baseUrl;
+        this.consoleService = consoleService;
     }
 
 
@@ -34,6 +36,7 @@ public class AccountService {
                 account = response.getBody();
             }
         } catch (RestClientResponseException | ResourceAccessException e) {
+            consoleService.printErrorMessage(e.getMessage());
             BasicLogger.log(e.getMessage());
         }
         return account;

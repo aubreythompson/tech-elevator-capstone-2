@@ -11,6 +11,12 @@ public class Transfer {
         public static final int SEND = 2;
     }
 
+    static public class transferStatuses {
+        public static final int PENDING = 1;
+        public static final int APPROVED = 2;
+        public static final int REJECTED = 3;
+    }
+
     private int transferId;
     private int transferTypeId;
     private int transferStatusId;
