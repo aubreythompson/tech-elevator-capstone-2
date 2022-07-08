@@ -56,7 +56,7 @@ public class JdbcTransferDao implements TransferDao {
     public Transfer create(Transfer transfer) {
 
         String sql = "" +
-                "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+                "INSERT INTO tenmo_transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
                 "VALUES (?, ?, ?, ?, ?) " +
                 "RETURNING transfer_id;";
 

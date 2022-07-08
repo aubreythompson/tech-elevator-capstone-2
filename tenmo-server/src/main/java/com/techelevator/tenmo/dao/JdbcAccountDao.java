@@ -53,7 +53,7 @@ public class JdbcAccountDao implements AccountDao {
     public void update(Account account)  {
         BigDecimal newAmount = account.getBalance();
         int userId = account.getUserId();
-        String sql = "UPDATE tenmo_account SET amount = ? WHERE user_id = ?";
+        String sql = "UPDATE tenmo_account SET balance = ? WHERE user_id = ?";
         jdbcTemplate.update(sql, newAmount, userId);
     }
 
