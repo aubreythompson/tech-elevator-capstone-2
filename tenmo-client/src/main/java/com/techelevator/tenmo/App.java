@@ -101,6 +101,12 @@ public class App {
             return;
         }
 
+        System.out.println();
+        System.out.println("1: Yes");
+        System.out.println("2: No");
+        System.out.println("---------");
+        boolean includeAllTransfers = 1 == consoleService.promptForInt("Would you like to include pending and rejected transfers?", 1, 2);
+
         System.out.println("-------------------------------------------");
         System.out.println("Transfers");
         System.out.println("ID\t\t\tFrom/To\t\tAmount");
@@ -108,6 +114,10 @@ public class App {
 
         int[] options = new int[transfers.length + 1];
         for (int i = 0; i < transfers.length; i++) {
+            if (!includeAllTransfers && (transfers[i].getStatusString().equals("Pending") || transfers[i].getStatusString().equals("Rejected"))) {
+                continue;
+            }
+
             options[i] = transfers[i].getTransferId();
             String fromOrTo = Objects.equals(transfers[i].getUserFrom().getId(), currentUser.getUser().getId()) ? "To" : "From";
             String otherUser = Objects.equals(transfers[i].getUserFrom().getId(), currentUser.getUser().getId()) ?
