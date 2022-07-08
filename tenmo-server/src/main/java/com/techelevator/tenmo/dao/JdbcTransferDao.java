@@ -1,7 +1,7 @@
 package com.techelevator.tenmo.dao;
 
-import com.techelevator.tenmo.model.InvalidTransferException;
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.TransferDTO;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -51,32 +51,23 @@ public class JdbcTransferDao implements TransferDao {
 
     }
 
-    @Override
-    public void sendBucks(Transfer transfer) throws InvalidTransferException {
-        /**I should be able to choose from a list of users to send TE Bucks to.
-         I must not be allowed to send money to myself.
-         A transfer includes the User IDs of the from and to users and the amount of TE Bucks.
-         The receiver's account balance is increased by the amount of the transfer.
-         The sender's account balance is decreased by the amount of the transfer.
-         I can't send more TE Bucks than I have in my account.
-         I can't send a zero or negative amount.
-         A Sending Transfer has an initial status of Approved.
-         */
-        //what kind of transfer is it?
-        if (transfer.getTransferTypeId() == 1) { //SEND
-            int accountIdFrom = transfer.getAccountIdFrom();
-            int accountIdTo = transfer.getAccountIdTo();
-            BigDecimal amount = transfer.getAmount();
-            BigDecimal fromCurrentBalance = accountDao.getAccountByAccountId(accountIdFrom).getBalance();
-            BigDecimal toCurrentBalance = accountDao.getAccountByAccountId(accountIdTo).getBalance();
-            double fromNewBalance = fromCurrentBalance.subtract(amount).doubleValue();
-            String fromSql = "UPDATE tenmo_account SET amount = ? WHERE account_id = ?";
-            jdbcTemplate.update(fromSql, fromNewBalance, accountIdFrom);
-            double toNewBalance = toCurrentBalance.add(amount).doubleValue();
-            String toSql = "UPDATE tenmo_account SET amount = ? WHERE account_id = ?";
-            jdbcTemplate.update(toSql, fromNewBalance, accountIdTo);
-        }
 
+    @Override
+    public Transfer create(Transfer transfer) {
+
+        String sql = "" +
+                "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+                "VALUES (?, ?, ?, ?, ?) " +
+                "RETURNING transfer_id;";
+
+        Integer transferId = jdbcTemplate.queryForObject(sql, Integer.class,
+                transfer.getTransferTypeId(),
+                transfer.getTransferStatusId(),
+                transfer.getAccountIdFrom(),
+                transfer.getAccountIdTo(),
+                transfer.getAmount());
+
+        return getTransferById(transferId);
     }
 
     private Transfer mapRowToTransfer(SqlRowSet rowSet) {

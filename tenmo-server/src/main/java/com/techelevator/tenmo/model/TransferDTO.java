@@ -16,6 +16,27 @@ public class TransferDTO {
 
     public TransferDTO() {}
 
+    public int getUserIdFrom() {
+        return userIdFrom;
+    }
 
+    public void setUserIdFrom(int userIdFrom) {
+        this.userIdFrom = userIdFrom;
+    }
 
+    public int getUserIdTo() {
+        return userIdTo;
+    }
+
+    public void setUserIdTo(int userIdTo) {
+        this.userIdTo = userIdTo;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
 }

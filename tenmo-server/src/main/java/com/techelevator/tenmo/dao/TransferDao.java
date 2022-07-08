@@ -1,8 +1,8 @@
 package com.techelevator.tenmo.dao;
 
-import com.techelevator.tenmo.model.InvalidTransferException;
 import com.techelevator.tenmo.model.Transfer;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface TransferDao {
@@ -11,6 +11,7 @@ public interface TransferDao {
 
     public List<Transfer> getAllTransfersForUser(int userId);
 
-    public void sendBucks(Transfer transfer) throws InvalidTransferException;
+
+    public Transfer create(Transfer transfer);
 
 }
