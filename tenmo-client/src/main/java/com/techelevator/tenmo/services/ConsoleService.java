@@ -112,8 +112,8 @@ public class ConsoleService {
         scanner.nextLine();
     }
 
-    public void printErrorMessage() {
-        System.out.println("An error occurred. Check the log for details.");
+    public void printErrorMessage(String message) {
+        System.out.println("ERROR: " + message + " - Check the log for details.");
     }
 
 }

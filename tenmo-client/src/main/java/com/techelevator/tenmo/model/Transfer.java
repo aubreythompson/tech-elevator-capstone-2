@@ -1,8 +1,15 @@
 package com.techelevator.tenmo.model;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Transfer {
+
+    static public class transferTypes {
+        public static final int REQUEST = 1;
+        public static final int SEND = 2;
+    }
 
     private int transferId;
     private int transferTypeId;
@@ -15,11 +22,7 @@ public class Transfer {
     private User UserFrom;
     private User UserTo;
 
-    private enum transferType{REQUEST,SEND};
-    private enum transferStatus{PENDING,APPROVED,REJECTED};
-
-    public Transfer() {
-    }
+    public Transfer() {}
 
     public Transfer(int transferId, int transferTypeId, int transferStatusId, int accountIdFrom, int accountIdTo, BigDecimal amount) {
         this.transferId = transferId;
@@ -29,6 +32,7 @@ public class Transfer {
         this.accountIdTo = accountIdTo;
         this.amount = amount;
     }
+
 
     public int getTransferId() {
         return transferId;
@@ -93,4 +97,25 @@ public class Transfer {
     public void setUserTo(User userTo) {
         UserTo = userTo;
     }
+
+
+    public String getTypeString() {
+        if (transferTypeId == 1) {
+            return "Request";
+        } else {
+            return "Send";
+        }
+    }
+
+    public String getStatusString() {
+        if (transferStatusId == 1) {
+            return "Pending";
+        } else if (transferStatusId == 2) {
+            return "Approved";
+        } else {
+            return "Rejected";
+        }
+    }
+
+
 }

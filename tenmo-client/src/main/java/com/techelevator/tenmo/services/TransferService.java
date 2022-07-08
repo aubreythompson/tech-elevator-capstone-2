@@ -17,9 +17,11 @@ public class TransferService {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final String baseUrl;
+    private final ConsoleService consoleService;
 
-    public TransferService(String baseUrl) {
+    public TransferService(String baseUrl, ConsoleService consoleService) {
         this.baseUrl = baseUrl;
+        this.consoleService = consoleService;
     }
 
     public Transfer[] getTransfersForUser(AuthenticatedUser authenticatedUser) {
@@ -109,7 +111,7 @@ public class TransferService {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         try {
-            restTemplate.exchange(baseUrl + "approve-request/" + transferId, HttpMethod.POST, entity, Void.class);
+            restTemplate.exchange(baseUrl + "approve-request/" + transferId, HttpMethod.PUT, entity, Void.class);
             return true;
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
@@ -124,7 +126,7 @@ public class TransferService {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         try {
-            restTemplate.exchange(baseUrl + "reject-request/" + transferId, HttpMethod.POST, entity, Void.class);
+            restTemplate.exchange(baseUrl + "reject-request/" + transferId, HttpMethod.PUT, entity, Void.class);
             return true;
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
