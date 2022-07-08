@@ -71,7 +71,6 @@ public class TransferController {
 
     @Transactional
     @RequestMapping(path = "/request-bucks", method = RequestMethod.POST)
-    //adds transfer to database with type request, status pending
     public void requestBucks(Principal principal, @Valid @RequestBody TransferDTO transferDto) throws Exception {
 
         String userName = principal.getName();
@@ -90,6 +89,18 @@ public class TransferController {
 
         Transfer transfer = new Transfer(0,1,1,accountFrom.getAccountId(),accountTo.getAccountId(),transferDto.getAmount());
         transferDao.create(transfer);
+    }
+
+    @RequestMapping(path = "/pending-requests", method = RequestMethod.GET)
+    public Transfer[] getPendingRequests(Principal principal) throws Exception {
+
+        String userName = principal.getName();
+        User currentUser = userDao.findByUsername(userName);
+
+        Account account = accountDao.getAccountByUserId(currentUser.getId());
+
+        Transfer[] transfers = transferDao.getTransfersForAccountByStatusId(account.getAccountId(), 1).toArray(new Transfer[0]);
+        return transfers;
     }
 
 

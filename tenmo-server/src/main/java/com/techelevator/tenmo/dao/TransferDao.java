@@ -11,6 +11,7 @@ public interface TransferDao {
 
     public List<Transfer> getAllTransfersForUser(int userId);
 
+    public List<Transfer> getTransfersForAccountByStatusId(int accountId, int statusId);
 
     public Transfer create(Transfer transfer);
 
