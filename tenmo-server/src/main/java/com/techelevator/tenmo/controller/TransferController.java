@@ -41,15 +41,7 @@ public class TransferController {
     @Transactional
     @RequestMapping(path = "/send-bucks", method = RequestMethod.POST)
     public void sendBucks(Principal principal, @Valid @RequestBody TransferDTO transferDto) throws Exception {
-        /**I should be able to choose from a list of users to send TE Bucks to.
-         I must not be allowed to send money to myself.
-         A transfer includes the User IDs of the from and to users and the amount of TE Bucks.
-         The receiver's account balance is increased by the amount of the transfer.
-         The sender's account balance is decreased by the amount of the transfer.
-         I can't send more TE Bucks than I have in my account.
-         I can't send a zero or negative amount.
-         A Sending Transfer has an initial status of Approved.
-         */
+
         String userName = principal.getName();
         User currentUser = userDao.findByUsername(userName);
 
@@ -72,12 +64,33 @@ public class TransferController {
         accountDao.update(new Account(accountFrom.getAccountId(), currentUser.getId(), newAmountFrom));
         accountDao.update(new Account(accountTo.getAccountId(), transferDto.getUserIdTo(), newAmountTo));
 
-        Transfer transfer = new Transfer(0,1,1,accountFrom.getAccountId(),accountTo.getAccountId(),transferDto.getAmount());
+        Transfer transfer = new Transfer(0,2,2,accountFrom.getAccountId(),accountTo.getAccountId(),transferDto.getAmount());
         transferDao.create(transfer);
 
     }
 
+    @Transactional
+    @RequestMapping(path = "/request-bucks", method = RequestMethod.POST)
+    //adds transfer to database with type request, status pending
+    public void requestBucks(Principal principal, @Valid @RequestBody TransferDTO transferDto) throws Exception {
 
+        String userName = principal.getName();
+        User currentUser = userDao.findByUsername(userName);
+
+        if (transferDto.getAmount().compareTo(BigDecimal.ZERO) != 1) {
+            throw new NonPositiveTransferException();
+        }
+
+        if (currentUser.getId() != transferDto.getUserIdTo()) {
+            throw new InvalidUserException();
+        }
+
+        Account accountTo = accountDao.getAccountByUserId(currentUser.getId());
+        Account accountFrom = accountDao.getAccountByUserId(transferDto.getUserIdFrom());
+
+        Transfer transfer = new Transfer(0,1,1,accountFrom.getAccountId(),accountTo.getAccountId(),transferDto.getAmount());
+        transferDao.create(transfer);
+    }
 
 
 }

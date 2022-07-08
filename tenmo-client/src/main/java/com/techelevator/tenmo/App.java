@@ -203,7 +203,7 @@ public class App {
         BigDecimal amount = consoleService.promptForBigDecimal("Enter amount:", true);
 
         TransferDTO transfer = new TransferDTO(targetUserId, Math.toIntExact(currentUser.getUser().getId()), amount);
-        if (transferService.sendBucks(currentUser, transfer)) {
+        if (transferService.requestBucks(currentUser, transfer)) {
             System.out.println("success!");
         } else {
             System.out.println("failed!");
