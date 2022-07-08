@@ -126,7 +126,7 @@ public class App {
         for (int i = 0; i < transfers.length; i++) {
             options[i] = transfers[i].getTransferId();
             System.out.println(transfers[i].getTransferId() + "\t\t" +
-                    transfers[i].getUserFrom().getUsername() + "\t\t" + transfers[i].getAmount());
+                    transfers[i].getUserTo().getUsername() + "\t\t" + transfers[i].getAmount());
         }
 
         int transferId = consoleService.promptForInt("Please enter transfer ID to approve/reject (0 to cancel):", options);
