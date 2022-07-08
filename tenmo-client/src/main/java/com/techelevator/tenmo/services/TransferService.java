@@ -109,7 +109,7 @@ public class TransferService {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         try {
-            restTemplate.exchange(baseUrl + "approve-request/" + transferId, HttpMethod.POST, entity, Void.class);
+            restTemplate.exchange(baseUrl + "approve-request/" + transferId, HttpMethod.PUT, entity, Void.class);
             return true;
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
@@ -124,19 +124,12 @@ public class TransferService {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         try {
-            restTemplate.exchange(baseUrl + "reject-request/" + transferId, HttpMethod.POST, entity, Void.class);
+            restTemplate.exchange(baseUrl + "reject-request/" + transferId, HttpMethod.PUT, entity, Void.class);
             return true;
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
             return false;
         }
     }
-
-
-
-
-
-
-
 
 }

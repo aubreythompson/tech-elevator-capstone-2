@@ -8,9 +8,8 @@ public interface AccountDao {
 
     public Account getAccountByUserId(int userId);
 
-    public Account getAccountByAccountId(int userId);
+    public Account getAccountByAccountId(int accountId);
 
-    public void update(Account account);
-
+    public void update(int accountId, BigDecimal amount);
 
 }
