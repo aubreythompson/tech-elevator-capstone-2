@@ -15,12 +15,10 @@ import java.util.List;
 public class JdbcTransferDao implements TransferDao {
 
     private final JdbcTemplate jdbcTemplate;
-    private final AccountDao accountDao;
     private final UserDao userDao;
 
-    public JdbcTransferDao(JdbcTemplate jdbcTemplate, AccountDao accountDao, UserDao userDao) {
+    public JdbcTransferDao(JdbcTemplate jdbcTemplate, UserDao userDao) {
         this.jdbcTemplate = jdbcTemplate;
-        this.accountDao = accountDao;
         this.userDao = userDao;
     }
 
