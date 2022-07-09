@@ -3,6 +3,7 @@ package com.techelevator.tenmo.model;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class Account {
 
@@ -31,5 +32,19 @@ public class Account {
 
     public BigDecimal getBalance() {
         return balance;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Account)) return false;
+        Account account = (Account) o;
+        return accountId == account.accountId && userId == account.userId && balance.equals(account.balance);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(accountId, userId, balance);
     }
 }
