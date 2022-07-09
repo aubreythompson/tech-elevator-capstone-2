@@ -28,7 +28,6 @@ public class AccountController {
         int userId = userDao.findIdByUsername(userName);
 
         Account account = accountDao.getAccountByUserId(userId);
-        System.out.println("test");
 
         return account;
     }

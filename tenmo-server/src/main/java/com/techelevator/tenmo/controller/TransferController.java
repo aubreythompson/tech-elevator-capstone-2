@@ -4,6 +4,7 @@ import com.techelevator.tenmo.dao.AccountDao;
 import com.techelevator.tenmo.dao.JdbcAccountDao;
 import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.dao.UserDao;
+import com.techelevator.tenmo.exceptions.AccountNotFoundException;
 import com.techelevator.tenmo.model.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -126,7 +127,7 @@ public class TransferController {
     }
 
     @Transactional
-    private void transferMoney(Account accountFrom, Account accountTo, BigDecimal amount) throws InsufficientFundsException {
+    private void transferMoney(Account accountFrom, Account accountTo, BigDecimal amount) throws InsufficientFundsException, AccountNotFoundException {
 
         BigDecimal newAmountFrom = accountFrom.getBalance().subtract(amount);
         if (newAmountFrom.compareTo(BigDecimal.ZERO)==-1) {

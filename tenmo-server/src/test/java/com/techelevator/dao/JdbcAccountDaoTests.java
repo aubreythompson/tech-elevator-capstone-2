@@ -2,6 +2,7 @@ package com.techelevator.dao;
 
 import com.techelevator.tenmo.dao.JdbcAccountDao;
 import com.techelevator.tenmo.dao.JdbcUserDao;
+
 import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.exceptions.AccountNotFoundException;
 import com.techelevator.tenmo.model.Account;
@@ -26,11 +27,13 @@ public class JdbcAccountDaoTests extends BaseDaoTests {
     private static final Account ACCOUNT_3 = new Account(2003, 1003, BigDecimal.valueOf(100.0));
 
     private JdbcAccountDao sut;
+    private JdbcUserDao userDao;
 
     @Before
     public void setup() {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-        sut = new JdbcAccountDao(jdbcTemplate, new JdbcUserDao(jdbcTemplate));
+        sut = new JdbcAccountDao(jdbcTemplate,userDao);
+
     }
 
 

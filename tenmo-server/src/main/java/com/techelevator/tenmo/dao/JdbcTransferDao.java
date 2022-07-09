@@ -1,7 +1,10 @@
 package com.techelevator.tenmo.dao;
 
+import com.techelevator.tenmo.exceptions.AccountNotFoundException;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.TransferDTO;
+import com.techelevator.tenmo.model.TransferNotFoundException;
+import com.techelevator.tenmo.model.UserNotFoundException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -16,10 +19,12 @@ public class JdbcTransferDao implements TransferDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final UserDao userDao;
+    private final AccountDao accountDao;
 
-    public JdbcTransferDao(JdbcTemplate jdbcTemplate, UserDao userDao) {
+    public JdbcTransferDao(JdbcTemplate jdbcTemplate, UserDao userDao, AccountDao accountDao) {
         this.jdbcTemplate = jdbcTemplate;
         this.userDao = userDao;
+        this.accountDao = accountDao;
     }
 
     @Override
@@ -27,19 +32,19 @@ public class JdbcTransferDao implements TransferDao {
         Transfer transfer = null;
         String sql = "SELECT * FROM tenmo_transfer WHERE transfer_id = ?;";
 
-        try {
-            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, transferId);
-            if (rowSet.next()) {
-                transfer= mapRowToTransfer(rowSet);
-            }
-
-        } catch (DataAccessException e) {
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, transferId);
+        if (rowSet.next()) {
+            transfer= mapRowToTransfer(rowSet);
+        } else {
+            throw new TransferNotFoundException();
         }
         return transfer;
     }
 
     @Override
     public List<Transfer> getAllTransfersForUser(int userId) {
+        //check that the user exists
+        userDao.getUserById(userId);
         List<Transfer> transfers = new ArrayList<>();
         String sql = "SELECT * FROM tenmo_transfer " +
                 "INNER JOIN tenmo_account " +
@@ -47,37 +52,35 @@ public class JdbcTransferDao implements TransferDao {
                 "OR tenmo_account.account_id = tenmo_transfer.account_to " +
                 "WHERE user_id = ?;";
 
-        try {
-            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, userId);
-            while (rowSet.next()) {
-                transfers.add(mapRowToTransfer(rowSet));
-            }
-
-        } catch (DataAccessException e) {
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, userId);
+        while (rowSet.next()) {
+            transfers.add(mapRowToTransfer(rowSet));
         }
+
         return transfers;
 
 
     }
 
-    public List<Transfer> getTransfersForAccountByStatusId(int accountId, int statusId) {
+    public List<Transfer> getTransfersForAccountByStatusId(int accountId, int statusId) throws AccountNotFoundException {
+        //check that account exists
+        accountDao.getAccountByAccountId(accountId);
         List<Transfer> transfers = new ArrayList<>();
         String sql = "SELECT * FROM tenmo_transfer WHERE account_from = ? AND transfer_status_id = ?;";
 
-        try {
-            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, accountId, statusId);
-            while (rowSet.next()) {
-                transfers.add(mapRowToTransfer(rowSet));
-            }
-
-        } catch (DataAccessException e) {
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, accountId, statusId);
+        while (rowSet.next()) {
+            transfers.add(mapRowToTransfer(rowSet));
         }
+
         return transfers;
     }
 
     @Override
-    public Transfer create(Transfer transfer) {
-
+    public Transfer create(Transfer transfer) throws AccountNotFoundException {
+        //check that both accounts exist
+        accountDao.getAccountByAccountId(transfer.getAccountIdFrom());
+        accountDao.getAccountByAccountId(transfer.getAccountIdTo());
         String sql = "INSERT INTO tenmo_transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
                 "VALUES (?, ?, ?, ?, ?) " +
                 "RETURNING transfer_id;";
@@ -97,7 +100,11 @@ public class JdbcTransferDao implements TransferDao {
 
     public void update(int transferId, int statusId) {
         String sql = "UPDATE tenmo_transfer SET transfer_status_id = ? WHERE transfer_id = ?";
-        jdbcTemplate.update(sql, statusId, transferId);
+        try {
+            jdbcTemplate.update(sql, statusId, transferId);
+        } catch (DataAccessException e) {
+        }
+
     }
 
     private Transfer mapRowToTransfer(SqlRowSet rowSet) {

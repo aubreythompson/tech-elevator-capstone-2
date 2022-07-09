@@ -1,10 +1,7 @@
 package com.techelevator.dao;
 
 import com.techelevator.tenmo.dao.*;
-import com.techelevator.tenmo.model.Account;
-import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.User;
-import com.techelevator.tenmo.model.UserNotFoundException;
+import com.techelevator.tenmo.model.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,12 +29,14 @@ public class JdbcTransferDaoTests extends BaseDaoTests {
 
     private JdbcTransferDao sut;
     private JdbcUserDao userDao;
+    private JdbcAccountDao accountDao;
 
     @Before
     public void setup() {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         userDao = new JdbcUserDao(jdbcTemplate);
-        sut = new JdbcTransferDao(jdbcTemplate, userDao);
+        accountDao = new JdbcAccountDao(jdbcTemplate,userDao);
+        sut = new JdbcTransferDao(jdbcTemplate, userDao, accountDao);
     }
 
     @Test
@@ -47,8 +46,8 @@ public class JdbcTransferDaoTests extends BaseDaoTests {
         Assert.assertEquals(Transfer.transferTypes.SEND, transfer.getTransferTypeId());
         Assert.assertEquals(Transfer.transferStatuses.APPROVED, transfer.getTransferStatusId());
     }
-/**
-    @Test(expected = DataAccessException.class)
+
+    @Test(expected = TransferNotFoundException.class)
     public void get_transfer_given_invalid_user_throws_exception() {
         sut.getTransferById(-1);
     }
@@ -56,12 +55,20 @@ public class JdbcTransferDaoTests extends BaseDaoTests {
     @Test
     public void get_all_transfers_for_user_returns_all_transfers() {
         List<Transfer> transfers = sut.getAllTransfersForUser(1001);
+
         for (Transfer transfer : transfers) {
-            transfer.getAccountIdFrom()
+            boolean isFrom = transfer.getAccountIdFrom()==2001;
+            boolean isTo = transfer.getAccountIdTo()==2001;
+            Assert.assertTrue(isFrom || isTo);
         }
+        Assert.assertEquals(5, transfers.size());
     }
 
-    getAllTransfersForUser(int userId)
+    @Test(expected = UserNotFoundException.class)
+    public void get_all_transfers_for_invalid_user_throws_exception() {
+        sut.getAllTransfersForUser(1000);
+    }
+    /**
  getTransfersForAccountByStatusId(int accountId, int statusId)
  Transfer create(Transfer transfer)
  update(int transferId, int statusId)

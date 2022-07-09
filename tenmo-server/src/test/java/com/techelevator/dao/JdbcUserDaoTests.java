@@ -111,4 +111,8 @@ public class JdbcUserDaoTests extends BaseDaoTests {
         actualUser.setPassword(newUser.getPassword()); // reset password back to unhashed password for testing
         Assert.assertEquals(newUser, actualUser);
     }
+
+    //User getUserByAccountId(int accountId)
+
+    //List<User> getOtherUsers(int userId)
 }
