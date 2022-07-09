@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.dao;
 
+import com.techelevator.tenmo.exceptions.AccountNotFoundException;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.TransferDTO;
 import com.techelevator.tenmo.model.TransferNotFoundException;
@@ -61,7 +62,7 @@ public class JdbcTransferDao implements TransferDao {
 
     }
 
-    public List<Transfer> getTransfersForAccountByStatusId(int accountId, int statusId) {
+    public List<Transfer> getTransfersForAccountByStatusId(int accountId, int statusId) throws AccountNotFoundException {
         //check that account exists
         accountDao.getAccountByAccountId(accountId);
         List<Transfer> transfers = new ArrayList<>();
@@ -76,7 +77,7 @@ public class JdbcTransferDao implements TransferDao {
     }
 
     @Override
-    public Transfer create(Transfer transfer) {
+    public Transfer create(Transfer transfer) throws AccountNotFoundException {
         //check that both accounts exist
         accountDao.getAccountByAccountId(transfer.getAccountIdFrom());
         accountDao.getAccountByAccountId(transfer.getAccountIdTo());
