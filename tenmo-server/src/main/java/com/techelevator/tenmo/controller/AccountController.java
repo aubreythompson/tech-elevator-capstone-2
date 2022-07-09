@@ -23,7 +23,7 @@ public class AccountController {
     }
 
     @RequestMapping(path = "/account", method = RequestMethod.GET)
-    public Account getAccount(Principal principal) {
+    public Account getAccount(Principal principal) throws Exception {
         String userName = principal.getName();
         int userId = userDao.findIdByUsername(userName);
 

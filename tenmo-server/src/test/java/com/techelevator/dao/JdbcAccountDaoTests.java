@@ -6,6 +6,7 @@ import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.exceptions.AccountNotFoundException;
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.User;
+import com.techelevator.tenmo.model.UserNotFoundException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,11 +34,20 @@ public class JdbcAccountDaoTests extends BaseDaoTests {
     }
 
 
-    @Test
-    public void getAccountByUserId_throws_given_invalid_id() {
+    @Test(expected = UserNotFoundException.class)
+    public void getAccountByUserId_throws_given_invalid_user_id() {
+        try {
+            sut.getAccountByUserId(-1);
+        } catch (AccountNotFoundException e) {
+            Assert.fail("Threw the wrong exception");
+        }
+    }
 
-        //sut.getAccountByUserId(-1);
-
+    @Test(expected = AccountNotFoundException.class)
+    public void getAccountByAccountId_throws_given_invalid_account_id() {
+        try {
+            sut.getAccountByAccountId(-1);
+        } catch (AccountNotFoundException ignored) {}
     }
 
 
