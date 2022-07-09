@@ -2,14 +2,11 @@ package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.exceptions.AccountNotFoundException;
 import com.techelevator.tenmo.model.Account;
-import com.techelevator.tenmo.model.User;
-import com.techelevator.tenmo.model.UserNotFoundException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
-import javax.xml.crypto.Data;
 import java.math.BigDecimal;
 
 @Component
@@ -24,7 +21,7 @@ public class JdbcAccountDao implements AccountDao {
     }
 
     @Override
-    public Account getAccountByUserId(int userId) throws AccountNotFoundException, UserNotFoundException {
+    public Account getAccountByUserId(int userId) {
         userDao.getUserById(userId); //check to make sure user exists
 
         Account account = null;
@@ -47,7 +44,7 @@ public class JdbcAccountDao implements AccountDao {
     }
 
     @Override
-    public Account getAccountByAccountId(int accountId) throws AccountNotFoundException {
+    public Account getAccountByAccountId(int accountId) {
         Account account = null;
         String sql = "SELECT * FROM tenmo_account WHERE account_id = ?;";
 
@@ -63,14 +60,11 @@ public class JdbcAccountDao implements AccountDao {
     }
 
     @Override
-    public void update(int accountId, BigDecimal amount) throws AccountNotFoundException {
-        String sql = "UPDATE tenmo_account SET balance = ? WHERE account_id = ?";
-        try {
-            jdbcTemplate.update(sql, amount, accountId);
-        } catch (DataAccessException e) {
-            throw new AccountNotFoundException("Account " + accountId + " not found.");
-        }
+    public void update(int accountId, BigDecimal amount) {
+        getAccountByAccountId(accountId); //check to make sure account exists
 
+        String sql = "UPDATE tenmo_account SET balance = ? WHERE account_id = ?";
+        jdbcTemplate.update(sql, amount, accountId);
     }
 
     private Account mapRowToAccount(SqlRowSet rowSet) {

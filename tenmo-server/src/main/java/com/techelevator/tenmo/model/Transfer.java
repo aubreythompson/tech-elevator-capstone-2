@@ -129,11 +129,11 @@ public class Transfer {
         Transfer transfer = (Transfer) o;
         return transferId == transfer.transferId && transferTypeId == transfer.transferTypeId &&
                 transferStatusId == transfer.transferStatusId && accountIdFrom == transfer.accountIdFrom &&
-                accountIdTo == transfer.accountIdTo && amount.equals(transfer.amount);
+                accountIdTo == transfer.accountIdTo && amount.doubleValue() == transfer.amount.doubleValue();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(transferId, transferTypeId, transferStatusId, accountIdFrom, accountIdTo, amount);
+        return Objects.hash(transferId, transferTypeId, transferStatusId, accountIdFrom, accountIdTo, amount.doubleValue());
     }
 }

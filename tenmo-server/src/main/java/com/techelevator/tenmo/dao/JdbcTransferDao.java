@@ -2,15 +2,12 @@ package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.exceptions.AccountNotFoundException;
 import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.TransferDTO;
-import com.techelevator.tenmo.model.TransferNotFoundException;
-import com.techelevator.tenmo.model.UserNotFoundException;
+import com.techelevator.tenmo.exceptions.TransferNotFoundException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +33,7 @@ public class JdbcTransferDao implements TransferDao {
         if (rowSet.next()) {
             transfer= mapRowToTransfer(rowSet);
         } else {
-            throw new TransferNotFoundException();
+            throw new TransferNotFoundException("Transfer " + transferId + " not found.");
         }
         return transfer;
     }
@@ -62,7 +59,7 @@ public class JdbcTransferDao implements TransferDao {
 
     }
 
-    public List<Transfer> getTransfersForAccountByStatusId(int accountId, int statusId) throws AccountNotFoundException {
+    public List<Transfer> getTransfersForAccountByStatusId(int accountId, int statusId) {
         //check that account exists
         accountDao.getAccountByAccountId(accountId);
         List<Transfer> transfers = new ArrayList<>();
@@ -77,34 +74,37 @@ public class JdbcTransferDao implements TransferDao {
     }
 
     @Override
-    public Transfer create(Transfer transfer) throws AccountNotFoundException {
+    public Transfer create(Transfer transfer) {
         //check that both accounts exist
         accountDao.getAccountByAccountId(transfer.getAccountIdFrom());
         accountDao.getAccountByAccountId(transfer.getAccountIdTo());
         String sql = "INSERT INTO tenmo_transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
                 "VALUES (?, ?, ?, ?, ?) " +
                 "RETURNING transfer_id;";
-        Integer transferId = null;
+        Transfer createdTransfer = null;
         try {
-            transferId = jdbcTemplate.queryForObject(sql, Integer.class,
+            Integer result = jdbcTemplate.queryForObject(sql, Integer.class,
                     transfer.getTransferTypeId(),
                     transfer.getTransferStatusId(),
                     transfer.getAccountIdFrom(),
                     transfer.getAccountIdTo(),
                     transfer.getAmount());
+            if (result != null) {
+                createdTransfer = getTransferById(result);
+            }
+
         } catch (DataAccessException e) {
+            throw new AccountNotFoundException("From account " + transfer.getAccountIdFrom() + " or To account " + transfer.getAccountIdTo() + " not found");
         }
 
-        return getTransferById(transferId);
+        return createdTransfer;
     }
 
     public void update(int transferId, int statusId) {
-        String sql = "UPDATE tenmo_transfer SET transfer_status_id = ? WHERE transfer_id = ?";
-        try {
-            jdbcTemplate.update(sql, statusId, transferId);
-        } catch (DataAccessException e) {
-        }
+        getTransferById(transferId); //check to see if transfer exists
 
+        String sql = "UPDATE tenmo_transfer SET transfer_status_id = ? WHERE transfer_id = ?";
+        jdbcTemplate.update(sql, statusId, transferId);
     }
 
     private Transfer mapRowToTransfer(SqlRowSet rowSet) {

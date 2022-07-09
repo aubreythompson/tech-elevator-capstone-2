@@ -2,7 +2,7 @@ package com.techelevator.dao;
 
 import com.techelevator.tenmo.dao.JdbcUserDao;
 import com.techelevator.tenmo.model.User;
-import com.techelevator.tenmo.model.UserNotFoundException;
+import com.techelevator.tenmo.exceptions.UserNotFoundException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

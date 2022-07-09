@@ -1,11 +1,13 @@
 package com.techelevator.dao;
 
 import com.techelevator.tenmo.dao.*;
+import com.techelevator.tenmo.exceptions.AccountNotFoundException;
+import com.techelevator.tenmo.exceptions.TransferNotFoundException;
+import com.techelevator.tenmo.exceptions.UserNotFoundException;
 import com.techelevator.tenmo.model.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.math.BigDecimal;
@@ -40,20 +42,18 @@ public class JdbcTransferDaoTests extends BaseDaoTests {
     }
 
     @Test
-    public void get_transfer_returns_correct_transfer() {
-        Transfer transfer = sut.getTransferById(3001);
-        Assert.assertEquals(3001, transfer.getTransferId());
-        Assert.assertEquals(Transfer.transferTypes.SEND, transfer.getTransferTypeId());
-        Assert.assertEquals(Transfer.transferStatuses.APPROVED, transfer.getTransferStatusId());
+    public void getTransfer_returns_correct_transfer() {
+        Transfer actual = sut.getTransferById(3001);
+        Assert.assertEquals(TRANSFER_1, actual);
     }
 
     @Test(expected = TransferNotFoundException.class)
-    public void get_transfer_given_invalid_user_throws_exception() {
+    public void getTransfer_throws_exception_given_invalid_user() {
         sut.getTransferById(-1);
     }
 
     @Test
-    public void get_all_transfers_for_user_returns_all_transfers() {
+    public void getAllTransfersForUser_returns_all_transfers() {
         List<Transfer> transfers = sut.getAllTransfersForUser(1001);
 
         for (Transfer transfer : transfers) {
@@ -62,16 +62,103 @@ public class JdbcTransferDaoTests extends BaseDaoTests {
             Assert.assertTrue(isFrom || isTo);
         }
         Assert.assertEquals(5, transfers.size());
+
+        transfers = sut.getAllTransfersForUser(1002);
+        for (Transfer transfer : transfers) {
+            boolean isFrom = transfer.getAccountIdFrom()==2002;
+            boolean isTo = transfer.getAccountIdTo()==2002;
+            Assert.assertTrue(isFrom || isTo);
+        }
+        Assert.assertEquals(4, transfers.size());
+
+        transfers = sut.getAllTransfersForUser(1003);
+        for (Transfer transfer : transfers) {
+            boolean isFrom = transfer.getAccountIdFrom()==2003;
+            boolean isTo = transfer.getAccountIdTo()==2003;
+            Assert.assertTrue(isFrom || isTo);
+        }
+        Assert.assertEquals(1, transfers.size());
     }
 
     @Test(expected = UserNotFoundException.class)
-    public void get_all_transfers_for_invalid_user_throws_exception() {
+    public void getAllTransfersForUser_throws_exception_given_invalid_user() {
         sut.getAllTransfersForUser(1000);
     }
-    /**
- getTransfersForAccountByStatusId(int accountId, int statusId)
- Transfer create(Transfer transfer)
- update(int transferId, int statusId)
 
-*/
+    @Test
+    public void getTransfersForAccountByStatusId_returns_correct_transfers() {
+        List<Transfer> transfers = sut.getTransfersForAccountByStatusId(2001, Transfer.transferStatuses.APPROVED);
+        Assert.assertEquals(3, transfers.size());
+        for (Transfer transfer : transfers) {
+            Assert.assertEquals(Transfer.transferStatuses.APPROVED, transfer.getTransferStatusId());
+        }
+
+        transfers = sut.getTransfersForAccountByStatusId(2001, Transfer.transferStatuses.PENDING);
+        Assert.assertEquals(1, transfers.size());
+        for (Transfer transfer : transfers) {
+            Assert.assertEquals(Transfer.transferStatuses.PENDING, transfer.getTransferStatusId());
+        }
+
+        transfers = sut.getTransfersForAccountByStatusId(2001, Transfer.transferStatuses.REJECTED);
+        Assert.assertEquals(1, transfers.size());
+        for (Transfer transfer : transfers) {
+            Assert.assertEquals(Transfer.transferStatuses.REJECTED, transfer.getTransferStatusId());
+        }
+
+    }
+
+    @Test(expected = AccountNotFoundException.class)
+    public void getTransfersForAccountByStatusId_throws_exception_given_invalid_account() {
+        sut.getTransfersForAccountByStatusId(-1, Transfer.transferStatuses.APPROVED);
+    }
+
+    @Test
+    public void create_correctly_creates_transfer() {
+        Transfer newTransfer = new Transfer();
+        newTransfer.setAccountIdFrom(2001);
+        newTransfer.setAccountIdTo(2002);
+        newTransfer.setAmount(BigDecimal.valueOf(123.45));
+        newTransfer.setTransferStatusId(Transfer.transferStatuses.APPROVED);
+        newTransfer.setTransferTypeId(Transfer.transferTypes.SEND);
+
+        try {
+            Transfer retrievedTransfer = sut.create(newTransfer);
+            newTransfer.setTransferId(retrievedTransfer.getTransferId());
+            Assert.assertEquals(newTransfer, retrievedTransfer);
+        } catch (TransferNotFoundException e) {
+            Assert.fail("Failed to find created transfer");
+        } catch (AccountNotFoundException e) {
+            Assert.fail("Failed to find To or From account");
+        }
+    }
+
+    @Test(expected = AccountNotFoundException.class)
+    public void create_throws_given_invalid_account() {
+        Transfer newTransfer = new Transfer();
+        newTransfer.setAccountIdFrom(2001);
+        newTransfer.setAccountIdTo(-1);
+        newTransfer.setAmount(BigDecimal.valueOf(123.45));
+        newTransfer.setTransferStatusId(Transfer.transferStatuses.APPROVED);
+        newTransfer.setTransferTypeId(Transfer.transferTypes.SEND);
+        sut.create(newTransfer);
+    }
+
+    @Test
+    public void update_correctly_updates_status() {
+        sut.update(TRANSFER_2.getTransferId(), Transfer.transferStatuses.APPROVED);
+        int actual = sut.getTransferById(TRANSFER_2.getTransferId()).getTransferStatusId();
+        int expected = Transfer.transferStatuses.APPROVED;
+        Assert.assertEquals(expected, actual);
+
+        sut.update(TRANSFER_2.getTransferId(), Transfer.transferStatuses.REJECTED);
+        actual = sut.getTransferById(TRANSFER_2.getTransferId()).getTransferStatusId();
+        expected = Transfer.transferStatuses.REJECTED;
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test(expected = TransferNotFoundException.class)
+    public void update_throws_given_invalid_transfer() {
+        sut.update(-1, Transfer.transferStatuses.APPROVED);
+    }
+
 }

@@ -2,7 +2,7 @@ package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.exceptions.AccountNotFoundException;
 import com.techelevator.tenmo.model.Account;
-import com.techelevator.tenmo.model.UserNotFoundException;
+import com.techelevator.tenmo.exceptions.UserNotFoundException;
 
 import java.math.BigDecimal;
 

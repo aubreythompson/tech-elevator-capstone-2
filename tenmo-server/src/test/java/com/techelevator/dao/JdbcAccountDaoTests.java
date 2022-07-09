@@ -3,18 +3,16 @@ package com.techelevator.dao;
 import com.techelevator.tenmo.dao.JdbcAccountDao;
 import com.techelevator.tenmo.dao.JdbcUserDao;
 
-import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.exceptions.AccountNotFoundException;
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.User;
-import com.techelevator.tenmo.model.UserNotFoundException;
+import com.techelevator.tenmo.exceptions.UserNotFoundException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.math.BigDecimal;
-import java.security.AccessControlException;
 
 public class JdbcAccountDaoTests extends BaseDaoTests {
 
@@ -27,30 +25,27 @@ public class JdbcAccountDaoTests extends BaseDaoTests {
     private static final Account ACCOUNT_3 = new Account(2003, 1003, BigDecimal.valueOf(100.0));
 
     private JdbcAccountDao sut;
-    private JdbcUserDao userDao;
 
     @Before
     public void setup() {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-        sut = new JdbcAccountDao(jdbcTemplate,userDao);
+        sut = new JdbcAccountDao(jdbcTemplate, new JdbcUserDao(jdbcTemplate));
 
     }
 
-
     @Test(expected = UserNotFoundException.class)
     public void getAccountByUserId_throws_given_invalid_user_id() {
-        try {
-            sut.getAccountByUserId(-1);
-        } catch (AccountNotFoundException e) {
-            Assert.fail("Threw the wrong exception");
-        }
+        sut.getAccountByUserId(-1);
     }
 
     @Test(expected = AccountNotFoundException.class)
     public void getAccountByAccountId_throws_given_invalid_account_id() {
-        try {
-            sut.getAccountByAccountId(-1);
-        } catch (AccountNotFoundException ignored) {}
+        sut.getAccountByAccountId(-1);
+    }
+
+    @Test(expected = AccountNotFoundException.class)
+    public void update_throws_given_invalid_account_id() {
+        sut.update(-1, BigDecimal.valueOf(100.0));
     }
 
 

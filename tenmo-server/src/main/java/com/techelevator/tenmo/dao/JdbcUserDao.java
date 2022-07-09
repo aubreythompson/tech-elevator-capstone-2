@@ -1,7 +1,7 @@
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.User;
-import com.techelevator.tenmo.model.UserNotFoundException;
+import com.techelevator.tenmo.exceptions.UserNotFoundException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
