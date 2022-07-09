@@ -40,11 +40,11 @@ public class Account {
         if (this == o) return true;
         if (!(o instanceof Account)) return false;
         Account account = (Account) o;
-        return accountId == account.accountId && userId == account.userId && balance.equals(account.balance);
+        return accountId == account.accountId && userId == account.userId && balance.doubleValue() == account.balance.doubleValue();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(accountId, userId, balance);
+        return Objects.hash(accountId, userId, balance.doubleValue());
     }
 }
