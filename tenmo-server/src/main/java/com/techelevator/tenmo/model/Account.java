@@ -4,6 +4,12 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.util.Objects;
+/**
+ *  Account includes an ID, associated user ID, and balance.
+ *
+ *  Note that the relationship between accounts and users is one-to-one,
+ *  so each user has exactly one account and vice versa.
+ */
 
 public class Account {
 

@@ -3,6 +3,19 @@ package com.techelevator.tenmo.model;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+/***
+ *Tranfers have:
+ *
+ * ID
+ * Type ID (request or send)
+ * Status ID (pending, approved or rejected. all sends are automatically approved. requests are approved or
+ * rejected by the account requested from.
+ *
+ * Note that accounts and users have a one-to-one relationship.
+ * The UserFrom and UserTo objects are included so that the client can easily access the usernames
+ * when displaying a user's transfers.
+ *
+ */
 public class Transfer {
 
     static public class transferTypes {
@@ -104,6 +117,10 @@ public class Transfer {
     }
 
 
+    /***
+     * gets type string for UI
+     * @return
+     */
     public String getTypeString() {
         if (transferTypeId == 1) {
             return "Request";
@@ -112,6 +129,10 @@ public class Transfer {
         }
     }
 
+    /***
+     * gets status string for UI
+     * @return
+     */
     public String getStatusString() {
         if (transferStatusId == 1) {
             return "Pending";
@@ -122,6 +143,11 @@ public class Transfer {
         }
     }
 
+    /***
+     * establishes equality for testing
+     * @param o
+     * @return
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

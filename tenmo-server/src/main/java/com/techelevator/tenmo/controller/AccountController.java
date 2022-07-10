@@ -22,6 +22,14 @@ public class AccountController {
         this.userDao = userDao;
     }
 
+    /***
+     * Note: accounts and users are one to one, so there is one account to get for the
+     * authenticated user accessed by principal
+     * @param principal
+     * @return
+     * @throws Exception
+     */
+
     @RequestMapping(path = "/account", method = RequestMethod.GET)
     public Account getAccount(Principal principal) throws Exception {
         String userName = principal.getName();

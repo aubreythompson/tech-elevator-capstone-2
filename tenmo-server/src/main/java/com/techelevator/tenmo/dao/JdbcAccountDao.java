@@ -9,6 +9,13 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
+/***
+ * gets and updates accounts
+ * note: since users and accounts are one-to-one, and
+ * an account is created when a user is created, there is no need
+ * for a create Account method
+ */
+
 @Component
 public class JdbcAccountDao implements AccountDao {
 
@@ -19,6 +26,12 @@ public class JdbcAccountDao implements AccountDao {
         this.jdbcTemplate = jdbcTemplate;
         this.userDao = userDao;
     }
+
+    /***
+     * since users and accounts are one-to-one, one account is returned
+     * @param userId
+     * @return
+     */
 
     @Override
     public Account getAccountByUserId(int userId) {
@@ -59,6 +72,11 @@ public class JdbcAccountDao implements AccountDao {
         return account;
     }
 
+    /****
+     * should only update the amount for the given accountID
+     * @param accountId
+     * @param amount
+     */
     @Override
     public void update(int accountId, BigDecimal amount) {
         getAccountByAccountId(accountId); //check to make sure account exists

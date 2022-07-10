@@ -4,6 +4,20 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+/***
+ *Tranfers have:
+ *
+ * ID
+ * Type ID (request or send)
+ * Status ID (pending, approved or rejected. all sends are automatically approved. requests are approved or
+ * rejected by the account requested from.
+ *
+ * Note that accounts and users have a one-to-one relationship.
+ * The UserFrom and UserTo objects are included so that the client can easily access the usernames
+ * when displaying a user's transfers.
+ *
+ */
+
 public class Transfer {
 
     static public class transferTypes {

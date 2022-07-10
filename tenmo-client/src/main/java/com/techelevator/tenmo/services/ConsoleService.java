@@ -10,6 +10,11 @@ public class ConsoleService {
 
     private final Scanner scanner = new Scanner(System.in);
 
+    /***
+     * Turn a String integer selection into an int
+     * @param  prompt
+     * @return int menu selection
+     */
     public int promptForMenuSelection(String prompt) {
         int menuSelection;
         System.out.print(prompt);
@@ -57,6 +62,14 @@ public class ConsoleService {
         return scanner.nextLine();
     }
 
+    /***
+     * Overloaded method promptoforInt
+     * this version lists all ints between min and max
+     * @param prompt
+     * @param min
+     * @param max
+     * @return
+     */
     public int promptForInt(String prompt, int min, int max) {
         System.out.print(prompt);
         while (true) {
@@ -73,6 +86,13 @@ public class ConsoleService {
         }
     }
 
+    /***
+     * This version was added so that the user could select using IDs
+     * options are the list of available IDs
+     * @param prompt
+     * @param options
+     * @return
+     */
     public int promptForInt(String prompt, int[] options) {
         System.out.print(prompt);
         while (true) {
@@ -91,6 +111,13 @@ public class ConsoleService {
         }
     }
 
+    /***
+     * BigDecimals, which are always amounts to request or be sent, must be positive.
+     * We handle this error any time a user is prompted for a big decimal.
+     * @param prompt
+     * @param mustBePositive
+     * @return
+     */
     public BigDecimal promptForBigDecimal(String prompt, boolean mustBePositive) {
         System.out.print(prompt);
         while (true) {
@@ -112,6 +139,10 @@ public class ConsoleService {
         scanner.nextLine();
     }
 
+    /***
+     * Called whenever an exception should have logged an error message
+     * @param message
+     */
     public void printErrorMessage(String message) {
         System.out.println("ERROR: " + message + " - Check the log for details.");
     }

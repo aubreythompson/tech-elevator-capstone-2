@@ -10,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 
+
 public class AccountService {
 
     private final RestTemplate restTemplate = new RestTemplate();
@@ -21,8 +22,12 @@ public class AccountService {
         this.consoleService = consoleService;
     }
 
-
-
+    /***
+     * getAccount returns an account object with a GET method.
+     * It uses the token of the authenticatedUser object.
+     * @param authenticatedUser
+     * @return Account for the authenticated user
+     */
     public Account getAccount(AuthenticatedUser authenticatedUser) {
         Account account = null;
 
@@ -42,15 +47,11 @@ public class AccountService {
         return account;
     }
 
-    public BigDecimal getBalance(AuthenticatedUser authenticatedUser) {
-
-        return null;
-
-
-    }
-
-
-
-
+//    public BigDecimal getBalance(AuthenticatedUser authenticatedUser) {
+//
+//        return null;
+//
+//
+//    }
 
 }

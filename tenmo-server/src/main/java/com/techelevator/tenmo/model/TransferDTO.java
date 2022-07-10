@@ -1,6 +1,11 @@
 package com.techelevator.tenmo.model;
 
 import java.math.BigDecimal;
+/***
+ * The Transfer Data Transfer Object is used to send only pertinent information to the server.
+ *
+ * We choose to send user IDs instead of account IDs because they are one-to-one.
+ */
 
 public class TransferDTO {
 

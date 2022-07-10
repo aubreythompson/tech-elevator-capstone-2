@@ -2,6 +2,12 @@ package com.techelevator.tenmo.model;
 
 import java.math.BigDecimal;
 
+/**
+ *  Account includes an ID, associated user ID, and balance.
+ *
+ *  Note that the relationship between accounts and users is one-to-one,
+ *  so each user has exactly one account and vice versa.
+ */
 public class Account {
 
     

@@ -105,6 +105,7 @@ public class App {
         System.out.println("1: Yes");
         System.out.println("2: No");
         System.out.println("---------");
+        //see if the user wants to see pending/rejected transfers - 1 if yes, 2 if not
         boolean includeAllTransfers = 1 == consoleService.promptForInt("Would you like to include pending and rejected transfers?", 1, 2);
 
         System.out.println("-------------------------------------------");
@@ -114,6 +115,7 @@ public class App {
 
         int[] options = new int[transfers.length + 1];
         for (int i = 0; i < transfers.length; i++) {
+            //skip pending and rejected transfers if desired
             if (!includeAllTransfers && (transfers[i].getStatusString().equals("Pending") || transfers[i].getStatusString().equals("Rejected"))) {
                 continue;
             }

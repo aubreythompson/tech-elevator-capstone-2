@@ -24,6 +24,12 @@ public class TransferService {
         this.consoleService = consoleService;
     }
 
+    /***
+     * GET method for getting all transfers TO and FROM a user.
+     * Note: this includes even those that were rejected or are pending.
+     * @param authenticatedUser
+     * @return list of transfers for user
+     */
     public Transfer[] getTransfersForUser(AuthenticatedUser authenticatedUser) {
         Transfer[] transfers = null;
 
@@ -43,6 +49,7 @@ public class TransferService {
         return transfers;
     }
 
+
     public boolean makeTransfer(AuthenticatedUser authenticatedUser, Transfer transfer) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(authenticatedUser.getToken());
@@ -58,7 +65,13 @@ public class TransferService {
         }
     }
 
-
+    /***
+     * This method transfers funds from one account to the other
+     * called when a send is made
+     * @param authenticatedUser
+     * @param transfer
+     * @return boolean successful transfer made
+     */
     public boolean sendBucks(AuthenticatedUser authenticatedUser, TransferDTO transfer) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(authenticatedUser.getToken());
@@ -74,6 +87,13 @@ public class TransferService {
         }
     }
 
+    /***
+     * This creates a type: request, status: pending transfer
+     * with a POST method
+     * @param authenticatedUser
+     * @param transfer
+     * @return boolean successful request made
+     */
     public boolean requestBucks(AuthenticatedUser authenticatedUser, TransferDTO transfer) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(authenticatedUser.getToken());
@@ -89,6 +109,11 @@ public class TransferService {
         }
     }
 
+    /***
+     *This gets the pending requests FROM the authenticated user
+     * @param authenticatedUser
+     * @return
+     */
 
     public Transfer[] getPendingRequests(AuthenticatedUser authenticatedUser) {
         Transfer[] transfers = null;
@@ -109,6 +134,12 @@ public class TransferService {
 
     }
 
+    /***
+     * Turns a pending request status to approved from the authenticated user
+     * @param authenticatedUser
+     * @param transferId
+     * @return boolean successful approve made
+     */
     public boolean approvePendingRequest(AuthenticatedUser authenticatedUser, int transferId) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(authenticatedUser.getToken());
@@ -125,6 +156,12 @@ public class TransferService {
 
     }
 
+    /***
+     * Turns a pending request status to rejected from the authenticated user
+     * @param authenticatedUser
+     * @param transferId
+     * @return boolean successful reject made
+     */
     public boolean rejectPendingRequest(AuthenticatedUser authenticatedUser, int transferId) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(authenticatedUser.getToken());

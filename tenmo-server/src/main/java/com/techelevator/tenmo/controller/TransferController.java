@@ -28,6 +28,11 @@ public class TransferController {
         this.userDao = userDao;
     }
 
+    /***
+     * GET method for all transfers for the logged in user
+     * @param principal
+     * @return
+     */
     @RequestMapping(path = "/transfers", method = RequestMethod.GET)
     public Transfer[] getTransfersForUser(Principal principal) {
         String userName = principal.getName();
@@ -37,6 +42,12 @@ public class TransferController {
 
     }
 
+    /***
+     * POST method for creating send tranfer
+     * @param principal
+     * @param transferDto includes accounts ID to and from and the amount
+     * @throws Exception - invalid user exception if the user logged in is wrong
+     */
 
     @Transactional
     @RequestMapping(path = "/send-bucks", method = RequestMethod.POST)
@@ -45,12 +56,9 @@ public class TransferController {
         String userName = principal.getName();
         User currentUser = userDao.findByUsername(userName);
 
+        //check that the user logged in is the user trying to send money
         if (currentUser.getId()!=transferDto.getUserIdFrom()) {
             throw new InvalidUserException();
-        }
-
-        if (transferDto.getAmount().compareTo(BigDecimal.ZERO)!=1) {
-            throw new NonPositiveTransferException();
         }
 
         Account accountFrom = accountDao.getAccountByUserId(currentUser.getId());
@@ -62,6 +70,14 @@ public class TransferController {
 
     }
 
+
+
+    /***
+     * POST method for creating request transfer
+     * @param principal
+     * @param transferDto includes accounts ID to and from and the amount
+     * @throws Exception - invalid user exception if the user logged in is wrong
+     */
     @Transactional
     @RequestMapping(path = "/request-bucks", method = RequestMethod.POST)
     public void requestBucks(Principal principal, @Valid @RequestBody TransferDTO transferDto) throws Exception {
@@ -69,13 +85,11 @@ public class TransferController {
         String userName = principal.getName();
         User currentUser = userDao.findByUsername(userName);
 
+        //check that the user logged in is the user requesting money
         if (currentUser.getId() != transferDto.getUserIdTo()) {
             throw new InvalidUserException();
         }
 
-        if (transferDto.getAmount().compareTo(BigDecimal.ZERO) != 1) {
-            throw new NonPositiveTransferException();
-        }
         Account accountTo = accountDao.getAccountByUserId(currentUser.getId());
         Account accountFrom = accountDao.getAccountByUserId(transferDto.getUserIdFrom());
 
@@ -83,6 +97,12 @@ public class TransferController {
         transferDao.create(transfer);
     }
 
+    /***
+     * get all the pending requests FROM the user logged in
+     * @param principal
+     * @return
+     * @throws Exception for data access exceptions
+     */
     @RequestMapping(path = "/pending-requests", method = RequestMethod.GET)
     public Transfer[] getPendingRequests(Principal principal) throws Exception {
 
@@ -95,6 +115,12 @@ public class TransferController {
         return transfers;
     }
 
+    /***
+     * updates pending request to approve
+     * @param principal
+     * @param transferId
+     * @throws Exception for data access exceptions, invalid users
+     */
     @Transactional
     @RequestMapping(path = "/approve-request/{transferId}", method = RequestMethod.PUT)
     public void approvePendingRequest(Principal principal, @PathVariable int transferId) throws Exception {
@@ -113,6 +139,12 @@ public class TransferController {
 
     }
 
+    /***
+     * updates pending request to rejected
+     * @param principal
+     * @param transferId
+     * @throws Exception
+     */
     @Transactional
     @RequestMapping(path = "/reject-request/{transferId}", method = RequestMethod.PUT)
     public void rejectPendingRequest(Principal principal, @PathVariable int transferId) throws Exception {
@@ -128,6 +160,15 @@ public class TransferController {
         transferDao.update(transferId,Transfer.transferStatuses.REJECTED);
     }
 
+    /***
+     * Makes sure there is enough funds in the account sending the money,
+     * then updates both accounts.
+     * @param accountFrom
+     * @param accountTo
+     * @param amount
+     * @throws InsufficientFundsException
+     * @throws AccountNotFoundException
+     */
     @Transactional
     private void transferMoney(Account accountFrom, Account accountTo, BigDecimal amount) throws InsufficientFundsException, AccountNotFoundException {
 

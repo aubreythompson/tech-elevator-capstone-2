@@ -11,6 +11,12 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+/***
+ * gets transfers by ID, user ID, status ID + account ID,
+ * creates transfers,
+ * and updates transfers (use case: approving or rejecting money requests)
+ */
+
 @Component
 public class JdbcTransferDao implements TransferDao {
 
@@ -40,7 +46,7 @@ public class JdbcTransferDao implements TransferDao {
 
     @Override
     public List<Transfer> getAllTransfersForUser(int userId) {
-        //check that the user exists
+        //check that the user exists - throws UserNotFound if not
         userDao.getUserById(userId);
         List<Transfer> transfers = new ArrayList<>();
         String sql = "SELECT * FROM tenmo_transfer " +
@@ -60,7 +66,7 @@ public class JdbcTransferDao implements TransferDao {
     }
 
     public List<Transfer> getTransfersForAccountByStatusId(int accountId, int statusId) {
-        //check that account exists
+        //check that account exists - throws AccountNotFound if not
         accountDao.getAccountByAccountId(accountId);
         List<Transfer> transfers = new ArrayList<>();
         String sql = "SELECT * FROM tenmo_transfer WHERE account_from = ? AND transfer_status_id = ?;";
@@ -75,7 +81,7 @@ public class JdbcTransferDao implements TransferDao {
 
     @Override
     public Transfer create(Transfer transfer) {
-        //check that both accounts exist
+        //check that both accounts exist - otherwise AccountNotFound is thrown
         accountDao.getAccountByAccountId(transfer.getAccountIdFrom());
         accountDao.getAccountByAccountId(transfer.getAccountIdTo());
         String sql = "INSERT INTO tenmo_transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
@@ -101,7 +107,7 @@ public class JdbcTransferDao implements TransferDao {
     }
 
     public void update(int transferId, int statusId) {
-        getTransferById(transferId); //check to see if transfer exists
+        getTransferById(transferId); //check to see if transfer exists - otherwise throws TransferNotFound
 
         String sql = "UPDATE tenmo_transfer SET transfer_status_id = ? WHERE transfer_id = ?";
         jdbcTemplate.update(sql, statusId, transferId);

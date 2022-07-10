@@ -103,7 +103,6 @@ public class JdbcUserDao implements UserDao {
            }
 
         } catch (NullPointerException | EmptyResultDataAccessException e) {
-            //throw account not found exception?
         }
 
         return user;

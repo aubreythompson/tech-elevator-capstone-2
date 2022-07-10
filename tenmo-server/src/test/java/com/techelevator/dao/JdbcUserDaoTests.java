@@ -19,6 +19,7 @@ public class JdbcUserDaoTests extends BaseDaoTests {
 
     private JdbcUserDao sut;
 
+
     @Before
     public void setup() {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
@@ -112,7 +113,5 @@ public class JdbcUserDaoTests extends BaseDaoTests {
         Assert.assertEquals(newUser, actualUser);
     }
 
-    //User getUserByAccountId(int accountId)
 
-    //List<User> getOtherUsers(int userId)
 }
